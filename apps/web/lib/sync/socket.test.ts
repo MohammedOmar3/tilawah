@@ -212,6 +212,46 @@ describe("SyncSocket", () => {
     expect(c.server.connectionCount).toBe(1);
   });
 
+  it("reconnectNow() during a backoff connects at once and resets the backoff", () => {
+    c.sock.connect();
+    c.time.advance(3000);
+    c.server.refuse(3);
+    c.server.drop();
+    c.time.advance(70); // attempt 0 → 1000 ms
+    c.time.advance(1100); // refused; attempt 1 → 2000 ms
+    c.time.advance(2100); // refused; attempt 2 → 4000 ms pending
+    expect(c.server.connectionCount).toBe(3);
+    c.sock.reconnectNow();
+    expect(c.server.connectionCount).toBe(4); // refused once more; attempt 0 → 1000 ms
+    c.time.advance(100 + 1000);
+    expect(c.server.connectionCount).toBe(5);
+    c.time.advance(3000);
+    expect(c.sock.connected).toBe(true);
+    c.time.advance(10_000);
+    expect(c.server.connectionCount).toBe(5);
+  });
+
+  it("reconnectNow() on an open socket runs a resync burst and opens nothing", () => {
+    c.sock.connect();
+    c.time.advance(3000);
+    const before = c.server.received.length;
+    c.sock.reconnectNow();
+    c.time.advance(1000);
+    expect(types(c, before)).toEqual(["ping", "ping", "ping"]);
+    expect(c.server.connectionCount).toBe(1);
+  });
+
+  it("reconnectNow() while connecting or after close() does nothing", () => {
+    c.sock.connect();
+    c.sock.reconnectNow();
+    expect(c.server.connectionCount).toBe(1);
+    c.time.advance(3000);
+    c.sock.close();
+    c.sock.reconnectNow();
+    c.time.advance(60_000);
+    expect(c.server.connectionCount).toBe(1);
+  });
+
   it("sendStat() sends a stat message", () => {
     c.sock.connect();
     c.time.advance(3000);

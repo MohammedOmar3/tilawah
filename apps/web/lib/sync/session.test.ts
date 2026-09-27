@@ -159,6 +159,21 @@ describe("createListeningSession", () => {
     expect(pings()).toBe(14);
   });
 
+  it("reconnects at once, without waiting out the backoff, when the network returns", async () => {
+    const c = await joined();
+    c.server.refuse(1);
+    c.server.drop();
+    c.time.advance(20); // attempt 0 → 1000 ms
+    c.time.advance(1100); // refused; attempt 1 → 2000 ms
+    expect(c.server.connectionCount).toBe(2);
+    expect(c.store.getState().status).toBe("reconnecting");
+    c.win.dispatchEvent(new Event("online"));
+    expect(c.server.connectionCount).toBe(3);
+    c.time.advance(500);
+    expect(c.store.getState().status).toBe("playing");
+    expect(c.server.connectionCount).toBe(3);
+  });
+
   it("keeps audio playing through a reconnect", async () => {
     const c = await joined();
     const a = c.current();

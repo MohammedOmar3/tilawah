@@ -144,6 +144,8 @@ export class FakeServer {
   upLatencyMs: number;
   downLatencyMs: number;
   programmeVersion: string | null;
+  /** Return false to swallow the server's reply to a message (simulated loss). */
+  replyFilter: ((msg: ClientMessage) => boolean) | null = null;
   readonly received: Received[] = [];
   readonly urls: string[] = [];
   private readonly time: FakeTime;
@@ -255,6 +257,7 @@ export class FakeServer {
     const at = this.time.now();
     this.received.push({ connection: conn.id, msg, at });
     const s = at + this.serverOffsetMs;
+    if (this.replyFilter && !this.replyFilter(msg)) return;
     if (msg.t === "hello") {
       const version = this.programmeVersion ?? msg.programme;
       this.deliver(conn, JSON.stringify({ t: "welcome", v: 1, programme: version, s }));

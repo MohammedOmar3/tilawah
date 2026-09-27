@@ -5,8 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postbuild": "node scripts/check-bundle.mjs",
     "typecheck": "next typegen && tsc --noEmit",
-    "lint": "eslint",
+    "lint": "eslint && node scripts/check-privacy.mjs",
     "test": "vitest run",
     "e2e": "playwright test"
   },

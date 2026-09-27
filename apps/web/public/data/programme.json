@@ -1,29 +1,695 @@
 {
-  "version": "dev.1",
-  "epoch": "2026-09-01T00:00:00Z",
+  "version": "2026-09-28.1",
+  "epoch": "2026-09-28T00:00:00Z",
   "reciter": {
-    "id": "dev-tone",
-    "name": "Development tone",
+    "id": "alafasy",
+    "name": "Mishary Rashid Alafasy",
     "riwayah": "hafs"
   },
   "tracks": [
     {
       "surah": 1,
-      "durationMs": 60000,
-      "audio": "/dev-audio/001.wav",
-      "timings": "/data/timings/dev-tone/001.json"
+      "durationMs": 46446,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/001.m4a",
+      "timings": "/data/timings/alafasy/001.json"
+    },
+    {
+      "surah": 2,
+      "durationMs": 7264079,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/002.m4a",
+      "timings": "/data/timings/alafasy/002.json"
+    },
+    {
+      "surah": 3,
+      "durationMs": 4791694,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/003.m4a",
+      "timings": "/data/timings/alafasy/003.json"
+    },
+    {
+      "surah": 4,
+      "durationMs": 4769150,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/004.m4a",
+      "timings": "/data/timings/alafasy/004.json"
+    },
+    {
+      "surah": 5,
+      "durationMs": 3757140,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/005.m4a",
+      "timings": "/data/timings/alafasy/005.json"
+    },
+    {
+      "surah": 6,
+      "durationMs": 4337644,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/006.m4a",
+      "timings": "/data/timings/alafasy/006.json"
+    },
+    {
+      "surah": 7,
+      "durationMs": 4792799,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/007.m4a",
+      "timings": "/data/timings/alafasy/007.json"
+    },
+    {
+      "surah": 8,
+      "durationMs": 1821027,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/008.m4a",
+      "timings": "/data/timings/alafasy/008.json"
+    },
+    {
+      "surah": 9,
+      "durationMs": 3624551,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/009.m4a",
+      "timings": "/data/timings/alafasy/009.json"
+    },
+    {
+      "surah": 10,
+      "durationMs": 2688916,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/010.m4a",
+      "timings": "/data/timings/alafasy/010.json"
+    },
+    {
+      "surah": 11,
+      "durationMs": 2770861,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/011.m4a",
+      "timings": "/data/timings/alafasy/011.json"
+    },
+    {
+      "surah": 12,
+      "durationMs": 2515907,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/012.m4a",
+      "timings": "/data/timings/alafasy/012.json"
+    },
+    {
+      "surah": 13,
+      "durationMs": 1212747,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/013.m4a",
+      "timings": "/data/timings/alafasy/013.json"
+    },
+    {
+      "surah": 14,
+      "durationMs": 1213573,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/014.m4a",
+      "timings": "/data/timings/alafasy/014.json"
+    },
+    {
+      "surah": 15,
+      "durationMs": 954384,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/015.m4a",
+      "timings": "/data/timings/alafasy/015.json"
+    },
+    {
+      "surah": 16,
+      "durationMs": 2530098,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/016.m4a",
+      "timings": "/data/timings/alafasy/016.json"
+    },
+    {
+      "surah": 17,
+      "durationMs": 1987589,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/017.m4a",
+      "timings": "/data/timings/alafasy/017.json"
+    },
+    {
+      "surah": 18,
+      "durationMs": 1995965,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/018.m4a",
+      "timings": "/data/timings/alafasy/018.json"
+    },
+    {
+      "surah": 19,
+      "durationMs": 1272478,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/019.m4a",
+      "timings": "/data/timings/alafasy/019.json"
+    },
+    {
+      "surah": 20,
+      "durationMs": 1626933,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/020.m4a",
+      "timings": "/data/timings/alafasy/020.json"
+    },
+    {
+      "surah": 21,
+      "durationMs": 1569264,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/021.m4a",
+      "timings": "/data/timings/alafasy/021.json"
+    },
+    {
+      "surah": 22,
+      "durationMs": 1766246,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/022.m4a",
+      "timings": "/data/timings/alafasy/022.json"
+    },
+    {
+      "surah": 23,
+      "durationMs": 1486429,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/023.m4a",
+      "timings": "/data/timings/alafasy/023.json"
+    },
+    {
+      "surah": 24,
+      "durationMs": 1958166,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/024.m4a",
+      "timings": "/data/timings/alafasy/024.json"
+    },
+    {
+      "surah": 25,
+      "durationMs": 1176895,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/025.m4a",
+      "timings": "/data/timings/alafasy/025.json"
+    },
+    {
+      "surah": 26,
+      "durationMs": 1966655,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/026.m4a",
+      "timings": "/data/timings/alafasy/026.json"
+    },
+    {
+      "surah": 27,
+      "durationMs": 1671916,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/027.m4a",
+      "timings": "/data/timings/alafasy/027.json"
+    },
+    {
+      "surah": 28,
+      "durationMs": 2032880,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/028.m4a",
+      "timings": "/data/timings/alafasy/028.json"
+    },
+    {
+      "surah": 29,
+      "durationMs": 1357271,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/029.m4a",
+      "timings": "/data/timings/alafasy/029.json"
+    },
+    {
+      "surah": 30,
+      "durationMs": 1160027,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/030.m4a",
+      "timings": "/data/timings/alafasy/030.json"
+    },
+    {
+      "surah": 31,
+      "durationMs": 652357,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/031.m4a",
+      "timings": "/data/timings/alafasy/031.json"
+    },
+    {
+      "surah": 32,
+      "durationMs": 476485,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/032.m4a",
+      "timings": "/data/timings/alafasy/032.json"
+    },
+    {
+      "surah": 33,
+      "durationMs": 1595564,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/033.m4a",
+      "timings": "/data/timings/alafasy/033.json"
+    },
+    {
+      "surah": 34,
+      "durationMs": 1039287,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/034.m4a",
+      "timings": "/data/timings/alafasy/034.json"
+    },
+    {
+      "surah": 35,
+      "durationMs": 965442,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/035.m4a",
+      "timings": "/data/timings/alafasy/035.json"
+    },
+    {
+      "surah": 36,
+      "durationMs": 1056340,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/036.m4a",
+      "timings": "/data/timings/alafasy/036.json"
+    },
+    {
+      "surah": 37,
+      "durationMs": 1449986,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/037.m4a",
+      "timings": "/data/timings/alafasy/037.json"
+    },
+    {
+      "surah": 38,
+      "durationMs": 1058938,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/038.m4a",
+      "timings": "/data/timings/alafasy/038.json"
+    },
+    {
+      "surah": 39,
+      "durationMs": 1627795,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/039.m4a",
+      "timings": "/data/timings/alafasy/039.json"
+    },
+    {
+      "surah": 40,
+      "durationMs": 1566433,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/040.m4a",
+      "timings": "/data/timings/alafasy/040.json"
+    },
+    {
+      "surah": 41,
+      "durationMs": 1148265,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/041.m4a",
+      "timings": "/data/timings/alafasy/041.json"
+    },
+    {
+      "surah": 42,
+      "durationMs": 1164304,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/042.m4a",
+      "timings": "/data/timings/alafasy/042.json"
+    },
+    {
+      "surah": 43,
+      "durationMs": 1225692,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/043.m4a",
+      "timings": "/data/timings/alafasy/043.json"
+    },
+    {
+      "surah": 44,
+      "durationMs": 573158,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/044.m4a",
+      "timings": "/data/timings/alafasy/044.json"
+    },
+    {
+      "surah": 45,
+      "durationMs": 637806,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/045.m4a",
+      "timings": "/data/timings/alafasy/045.json"
+    },
+    {
+      "surah": 46,
+      "durationMs": 951050,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/046.m4a",
+      "timings": "/data/timings/alafasy/046.json"
+    },
+    {
+      "surah": 47,
+      "durationMs": 732161,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/047.m4a",
+      "timings": "/data/timings/alafasy/047.json"
+    },
+    {
+      "surah": 48,
+      "durationMs": 716853,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/048.m4a",
+      "timings": "/data/timings/alafasy/048.json"
+    },
+    {
+      "surah": 49,
+      "durationMs": 495779,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/049.m4a",
+      "timings": "/data/timings/alafasy/049.json"
+    },
+    {
+      "surah": 50,
+      "durationMs": 558760,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/050.m4a",
+      "timings": "/data/timings/alafasy/050.json"
+    },
+    {
+      "surah": 51,
+      "durationMs": 550326,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/051.m4a",
+      "timings": "/data/timings/alafasy/051.json"
+    },
+    {
+      "surah": 52,
+      "durationMs": 490633,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/052.m4a",
+      "timings": "/data/timings/alafasy/052.json"
+    },
+    {
+      "surah": 53,
+      "durationMs": 466716,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/053.m4a",
+      "timings": "/data/timings/alafasy/053.json"
+    },
+    {
+      "surah": 54,
+      "durationMs": 488763,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/054.m4a",
+      "timings": "/data/timings/alafasy/054.json"
+    },
+    {
+      "surah": 55,
+      "durationMs": 690600,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/055.m4a",
+      "timings": "/data/timings/alafasy/055.json"
+    },
+    {
+      "surah": 56,
+      "durationMs": 730074,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/056.m4a",
+      "timings": "/data/timings/alafasy/056.json"
+    },
+    {
+      "surah": 57,
+      "durationMs": 821160,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/057.m4a",
+      "timings": "/data/timings/alafasy/057.json"
+    },
+    {
+      "surah": 58,
+      "durationMs": 604971,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/058.m4a",
+      "timings": "/data/timings/alafasy/058.json"
+    },
+    {
+      "surah": 59,
+      "durationMs": 622479,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/059.m4a",
+      "timings": "/data/timings/alafasy/059.json"
+    },
+    {
+      "surah": 60,
+      "durationMs": 446460,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/060.m4a",
+      "timings": "/data/timings/alafasy/060.json"
+    },
+    {
+      "surah": 61,
+      "durationMs": 286650,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/061.m4a",
+      "timings": "/data/timings/alafasy/061.json"
+    },
+    {
+      "surah": 62,
+      "durationMs": 208353,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/062.m4a",
+      "timings": "/data/timings/alafasy/062.json"
+    },
+    {
+      "surah": 63,
+      "durationMs": 251882,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/063.m4a",
+      "timings": "/data/timings/alafasy/063.json"
+    },
+    {
+      "surah": 64,
+      "durationMs": 319202,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/064.m4a",
+      "timings": "/data/timings/alafasy/064.json"
+    },
+    {
+      "surah": 65,
+      "durationMs": 356442,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/065.m4a",
+      "timings": "/data/timings/alafasy/065.json"
+    },
+    {
+      "surah": 66,
+      "durationMs": 353136,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/066.m4a",
+      "timings": "/data/timings/alafasy/066.json"
+    },
+    {
+      "surah": 67,
+      "durationMs": 444135,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/067.m4a",
+      "timings": "/data/timings/alafasy/067.json"
+    },
+    {
+      "surah": 68,
+      "durationMs": 451762,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/068.m4a",
+      "timings": "/data/timings/alafasy/068.json"
+    },
+    {
+      "surah": 69,
+      "durationMs": 401065,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/069.m4a",
+      "timings": "/data/timings/alafasy/069.json"
+    },
+    {
+      "surah": 70,
+      "durationMs": 314052,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/070.m4a",
+      "timings": "/data/timings/alafasy/070.json"
+    },
+    {
+      "surah": 71,
+      "durationMs": 277378,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/071.m4a",
+      "timings": "/data/timings/alafasy/071.json"
+    },
+    {
+      "surah": 72,
+      "durationMs": 330476,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/072.m4a",
+      "timings": "/data/timings/alafasy/072.json"
+    },
+    {
+      "surah": 73,
+      "durationMs": 238943,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/073.m4a",
+      "timings": "/data/timings/alafasy/073.json"
+    },
+    {
+      "surah": 74,
+      "durationMs": 321912,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/074.m4a",
+      "timings": "/data/timings/alafasy/074.json"
+    },
+    {
+      "surah": 75,
+      "durationMs": 207909,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/075.m4a",
+      "timings": "/data/timings/alafasy/075.json"
+    },
+    {
+      "surah": 76,
+      "durationMs": 311589,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/076.m4a",
+      "timings": "/data/timings/alafasy/076.json"
+    },
+    {
+      "surah": 77,
+      "durationMs": 283045,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/077.m4a",
+      "timings": "/data/timings/alafasy/077.json"
+    },
+    {
+      "surah": 78,
+      "durationMs": 278060,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/078.m4a",
+      "timings": "/data/timings/alafasy/078.json"
+    },
+    {
+      "surah": 79,
+      "durationMs": 237375,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/079.m4a",
+      "timings": "/data/timings/alafasy/079.json"
+    },
+    {
+      "surah": 80,
+      "durationMs": 202481,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/080.m4a",
+      "timings": "/data/timings/alafasy/080.json"
+    },
+    {
+      "surah": 81,
+      "durationMs": 126251,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/081.m4a",
+      "timings": "/data/timings/alafasy/081.json"
+    },
+    {
+      "surah": 82,
+      "durationMs": 129822,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/082.m4a",
+      "timings": "/data/timings/alafasy/082.json"
+    },
+    {
+      "surah": 83,
+      "durationMs": 287452,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/083.m4a",
+      "timings": "/data/timings/alafasy/083.json"
+    },
+    {
+      "surah": 84,
+      "durationMs": 145346,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/084.m4a",
+      "timings": "/data/timings/alafasy/084.json"
+    },
+    {
+      "surah": 85,
+      "durationMs": 180305,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/085.m4a",
+      "timings": "/data/timings/alafasy/085.json"
+    },
+    {
+      "surah": 86,
+      "durationMs": 87981,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/086.m4a",
+      "timings": "/data/timings/alafasy/086.json"
+    },
+    {
+      "surah": 87,
+      "durationMs": 95664,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/087.m4a",
+      "timings": "/data/timings/alafasy/087.json"
+    },
+    {
+      "surah": 88,
+      "durationMs": 121529,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/088.m4a",
+      "timings": "/data/timings/alafasy/088.json"
+    },
+    {
+      "surah": 89,
+      "durationMs": 195240,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/089.m4a",
+      "timings": "/data/timings/alafasy/089.json"
+    },
+    {
+      "surah": 90,
+      "durationMs": 106241,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/090.m4a",
+      "timings": "/data/timings/alafasy/090.json"
+    },
+    {
+      "surah": 91,
+      "durationMs": 73046,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/091.m4a",
+      "timings": "/data/timings/alafasy/091.json"
+    },
+    {
+      "surah": 92,
+      "durationMs": 99738,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/092.m4a",
+      "timings": "/data/timings/alafasy/092.json"
+    },
+    {
+      "surah": 93,
+      "durationMs": 54910,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/093.m4a",
+      "timings": "/data/timings/alafasy/093.json"
+    },
+    {
+      "surah": 94,
+      "durationMs": 34064,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/094.m4a",
+      "timings": "/data/timings/alafasy/094.json"
+    },
+    {
+      "surah": 95,
+      "durationMs": 59194,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/095.m4a",
+      "timings": "/data/timings/alafasy/095.json"
+    },
+    {
+      "surah": 96,
+      "durationMs": 83671,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/096.m4a",
+      "timings": "/data/timings/alafasy/096.json"
+    },
+    {
+      "surah": 97,
+      "durationMs": 35772,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/097.m4a",
+      "timings": "/data/timings/alafasy/097.json"
+    },
+    {
+      "surah": 98,
+      "durationMs": 113189,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/098.m4a",
+      "timings": "/data/timings/alafasy/098.json"
+    },
+    {
+      "surah": 99,
+      "durationMs": 49869,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/099.m4a",
+      "timings": "/data/timings/alafasy/099.json"
+    },
+    {
+      "surah": 100,
+      "durationMs": 60082,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/100.m4a",
+      "timings": "/data/timings/alafasy/100.json"
+    },
+    {
+      "surah": 101,
+      "durationMs": 53212,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/101.m4a",
+      "timings": "/data/timings/alafasy/101.json"
+    },
+    {
+      "surah": 102,
+      "durationMs": 52768,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/102.m4a",
+      "timings": "/data/timings/alafasy/102.json"
+    },
+    {
+      "surah": 103,
+      "durationMs": 20069,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/103.m4a",
+      "timings": "/data/timings/alafasy/103.json"
+    },
+    {
+      "surah": 104,
+      "durationMs": 47622,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/104.m4a",
+      "timings": "/data/timings/alafasy/104.json"
+    },
+    {
+      "surah": 105,
+      "durationMs": 39424,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/105.m4a",
+      "timings": "/data/timings/alafasy/105.json"
+    },
+    {
+      "surah": 106,
+      "durationMs": 32941,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/106.m4a",
+      "timings": "/data/timings/alafasy/106.json"
+    },
+    {
+      "surah": 107,
+      "durationMs": 48118,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/107.m4a",
+      "timings": "/data/timings/alafasy/107.json"
+    },
+    {
+      "surah": 108,
+      "durationMs": 15465,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/108.m4a",
+      "timings": "/data/timings/alafasy/108.json"
+    },
+    {
+      "surah": 109,
+      "durationMs": 44496,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/109.m4a",
+      "timings": "/data/timings/alafasy/109.json"
+    },
+    {
+      "surah": 110,
+      "durationMs": 25104,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/110.m4a",
+      "timings": "/data/timings/alafasy/110.json"
+    },
+    {
+      "surah": 111,
+      "durationMs": 31713,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/111.m4a",
+      "timings": "/data/timings/alafasy/111.json"
     },
     {
       "surah": 112,
-      "durationMs": 45000,
-      "audio": "/dev-audio/112.wav",
-      "timings": "/data/timings/dev-tone/112.json"
+      "durationMs": 13297,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/112.m4a",
+      "timings": "/data/timings/alafasy/112.json"
     },
     {
       "surah": 113,
-      "durationMs": 30000,
-      "audio": "/dev-audio/113.wav",
-      "timings": "/data/timings/dev-tone/113.json"
+      "durationMs": 23772,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/113.m4a",
+      "timings": "/data/timings/alafasy/113.json"
+    },
+    {
+      "surah": 114,
+      "durationMs": 40856,
+      "audio": "https://tilawah-media.mxmd.dev/alafasy/v1/114.m4a",
+      "timings": "/data/timings/alafasy/114.json"
     }
   ]
 }

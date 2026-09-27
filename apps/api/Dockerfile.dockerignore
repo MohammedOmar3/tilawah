@@ -1,0 +1,8 @@
+# BuildKit reads <Dockerfile>.dockerignore beside the Dockerfile, which is the
+# only ignore file that applies when the build context is the repo root.
+# Send nothing but the API module.
+*
+!apps/api/
+apps/api/bin/
+apps/api/**/*_test.go
+apps/api/Dockerfile*

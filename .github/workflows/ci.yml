@@ -29,6 +29,26 @@ jobs:
             (cd "$dir" && go vet ./... && go test -race ./...)
             echo "::endgroup::"
           done
+  docker:
+    needs: go
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: build the API image
+        run: docker build -f apps/api/Dockerfile -t tilawah-api .
+      - name: image stays small
+        run: |
+          size=$(docker image inspect tilawah-api --format '{{.Size}}')
+          echo "image size: $size bytes"
+          test "$size" -lt 25000000
+      - name: smoke-test /healthz
+        run: |
+          docker run -d --name api -p 8080:8080 tilawah-api
+          body=$(curl -fsS --retry 5 --retry-connrefused --retry-delay 1 http://localhost:8080/healthz)
+          test "$body" = "ok"
+      - if: always()
+        name: container logs
+        run: docker logs api || true
   e2e:
     needs: [js, go]
     runs-on: ubuntu-latest

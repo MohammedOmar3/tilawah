@@ -26,7 +26,7 @@ function setMediaMetadata({ title, artist }: MediaMetadataInit): void {
   navigator.mediaSession.metadata = new MediaMetadata({
     title,
     artist,
-    album: "Quran Global",
+    album: "Tilawah",
     artwork: [
       { src: "/icon-512.png", sizes: "512x512", type: "image/png" },
       { src: "/icon-192.png", sizes: "192x192", type: "image/png" },

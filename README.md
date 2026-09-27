@@ -1,4 +1,4 @@
-# Quran Global (Tilawah)
+# Tilawah (Tilawah)
 
 > One Quran. One moment. A world listening together.
 

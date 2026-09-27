@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import GlobeLab from "./GlobeLab";
 
 export const metadata: Metadata = {
-  title: "Globe lab · Quran Global",
+  title: "Globe lab · Tilawah",
   robots: { index: false, follow: false },
 };
 

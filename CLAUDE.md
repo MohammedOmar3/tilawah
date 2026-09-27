@@ -4,7 +4,7 @@ Guidance for every Claude session and subagent working in this repository. Read 
 
 ## What this is
 
-Quran Global: everyone listens to the same Quran recitation at the same moment while a calm 3D globe shows where listeners are, in aggregate.
+Tilawah: everyone listens to the same Quran recitation at the same moment while a calm 3D globe shows where listeners are, in aggregate.
 
 - Spec (source of truth): `docs/superpowers/specs/2026-09-27-quran-global-mvp-design.md`
 - Features and acceptance checks: `docs/FEATURES.md`

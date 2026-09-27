@@ -1,4 +1,4 @@
-// Command server runs the Quran Global API: WebSocket clock sync, presence
+// Command server runs the Tilawah API: WebSocket clock sync, presence
 // counting and the cached presence snapshot.
 package main
 

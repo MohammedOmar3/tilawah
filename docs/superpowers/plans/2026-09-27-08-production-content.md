@@ -83,7 +83,7 @@ tools/media/input/<reciterId>/reciter.json                   { "id", "name", "ri
 
 - [ ] **Step 1: Test** `objectParams(file, reciterId, keyVersion)` → `{ Key: "<reciterId>/<keyVersion>/NNN.m4a", ContentType: "audio/mp4", CacheControl: "public, max-age=31536000, immutable" }`.
 - [ ] **Step 2–4:** fail, implement, pass.
-- [ ] **Step 5: Implement the runner**: S3 client with `endpoint: https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`, `region: "auto"`, credentials from `R2_ACCESS_KEY_ID`/`R2_SECRET_ACCESS_KEY`. `HeadObject` first; skip files whose size matches. Upload with 4 in parallel. Never delete objects. Then `curl -sI https://media.<domain>/<reciterId>/<keyVersion>/001.m4a` twice: `200`, `content-type: audio/mp4`, and `cf-cache-status: HIT` on the second.
+- [ ] **Step 5: Implement the runner**: S3 client with `endpoint: https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`, `region: "auto"`, credentials from `R2_ACCESS_KEY_ID`/`R2_SECRET_ACCESS_KEY`, bucket from `R2_BUCKET` (`quran-tilawah-media`). `HeadObject` first; skip files whose size matches. Upload with 4 in parallel. Never delete objects. Then `curl -sI https://tilawah-media.mxmd.dev/<reciterId>/<keyVersion>/001.m4a` twice: `200`, `content-type: audio/mp4`, and `cf-cache-status: HIT` on the second.
 - [ ] **Step 6: Commit** — `Upload encoded recitations to R2`
 
 ---
@@ -97,5 +97,5 @@ tools/media/input/<reciterId>/reciter.json                   { "id", "name", "ri
 
 ## Done when
 - `pnpm --filter media test` passes; `pnpm data:validate` passes in production mode.
-- All 114 files are on R2 and served from `media.<domain>` with cache hits.
+- All 114 files are on R2 and served from `tilawah-media.mxmd.dev` with cache hits.
 - The site plays the real recitation with correct ayah highlighting.

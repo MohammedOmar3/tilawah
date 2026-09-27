@@ -44,7 +44,7 @@ Agents need to reach `registry.npmjs.org`, `proxy.golang.org`, `sum.golang.org`,
 Pick a reciter whose **gapless per-surah recordings** and **verse timestamps** already exist (for example on Quran.com's chapter recitations), in **Hafs 'an 'Asim**. Write to the reciter or their publisher for written permission to stream the recordings from your own storage, stating that the project is non-commercial and ad-free. Plans 01 to 07 don't need the answer; plan 08 does.
 
 ### M-S6. (Optional now, required at the end) Register a domain
-Any registrar works; Cloudflare Registrar is at cost. The plans write `<domain>` wherever it's needed.
+Done: the project uses `mxmd.dev` (see Hostnames in Part 2). Older plan text writes `<domain>`, `media.<domain>` and `api.<domain>`; read them as the hostnames in that table.
 
 ---
 
@@ -52,54 +52,65 @@ Any registrar works; Cloudflare Registrar is at cost. The plans write `<domain>`
 
 Do these in order. Steps marked **agent-assisted** can be handed to Claude once the credential exists.
 
+### Hostnames
+
+The site lives on a subdomain of `mxmd.dev`. Cloudflare's free Universal SSL certificate covers `mxmd.dev` and `*.mxmd.dev` only, so every hostname stays one level deep (`media.tilawah.mxmd.dev` would need the paid Advanced Certificate Manager).
+
+| Role | Hostname | Set up in |
+|---|---|---|
+| Site | `tilawah.mxmd.dev` | M-E6 |
+| Audio (R2) | `tilawah-media.mxmd.dev` | M-E2 |
+| API (Railway) | `tilawah-api.mxmd.dev` | M-E4, M-E5 |
+
 ### M-E1. Cloudflare account and domain
-1. Create a free Cloudflare account and add the domain; switch the registrar's nameservers to Cloudflare's.
+1. Create a free Cloudflare account and add `mxmd.dev` (skip if it's already there); switch the registrar's nameservers to Cloudflare's. R2, Pages and the zone must be in the same Cloudflare account.
 2. SSL/TLS → Overview → **Full (strict)**.
 3. Caching → Tiered Cache → turn on **Smart Tiered Caching** (free).
+4. Caching → Configuration → **Browser Cache TTL** → **Respect Existing Headers**. The default (4 hours) overwrites the API's `max-age=5` on `presence.json`, and browsers would then keep showing a 4-hour-old globe.
 
 ### M-E2. R2 bucket for audio
-1. R2 → Create bucket `quran-global-media` (location: automatic).
-2. Bucket → Settings → Custom domain → `media.<domain>`.
-3. Bucket → Settings → CORS: allow `GET, HEAD` from `https://<domain>`.
-4. Caching → Cache Rules → new rule: hostname equals `media.<domain>` → Eligible for cache, Edge TTL 1 year, Browser TTL 7 days.
+1. R2 → Create bucket `quran-tilawah-media` (location: automatic).
+2. Bucket → Settings → Custom domain → `tilawah-media.mxmd.dev`.
+3. Bucket → Settings → CORS: allow `GET, HEAD` from `https://tilawah.mxmd.dev`.
+4. Caching → Cache Rules → new rule: hostname equals `tilawah-media.mxmd.dev` → Eligible for cache, Edge TTL 1 year, Browser TTL 7 days.
 5. R2 → Manage API tokens → create a token with **Object Read & Write** on this bucket. Keep the access key ID, secret and account ID for M-E3.
 
 ### M-E3. Ingest real audio (agent-assisted, runs plan 08)
-Needs: the written permission from M-S5, the source recordings and verse timings, ffmpeg, and the R2 token from M-E2 exported as `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_ACCOUNT_ID`. Plan 08 encodes, measures durations, builds the production `programme.json` and timings, and uploads to R2.
+Needs: the written permission from M-S5, the source recordings and verse timings, ffmpeg, and the R2 token from M-E2 exported as `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_ACCOUNT_ID`, plus `R2_BUCKET=quran-tilawah-media`. Plan 08 encodes, measures durations, builds the production `programme.json` and timings, and uploads to R2.
 
 ### M-E4. Railway service for the API
 1. Railway → subscribe to **Hobby** ($5/month, includes $5 of usage).
 2. New Project → Deploy from GitHub repo → `MohammedOmar3/tilawah`. Service settings: Root directory `/`, Dockerfile path `apps/api/Dockerfile`, watch paths `apps/api/**`, deploy branch `main`.
 3. Variables:
    ```
-   ALLOWED_ORIGINS=https://<domain>
+   ALLOWED_ORIGINS=https://tilawah.mxmd.dev
    ORIGIN_SECRET=<long random string>        # also used in M-E5
    PROGRAMME_VERSION=<version from programme.json>
    STATS_TOKEN=<long random string>
    TRUST_CF_HEADERS=true
    ```
-4. Settings → Networking → Custom domain `api.<domain>`; copy the CNAME target.
+4. Settings → Networking → Custom domain `tilawah-api.mxmd.dev`; copy the CNAME target.
 5. Settings → Usage limits → set a **hard limit of $15** so the bill can never pass $20.
 6. Health check path: `/healthz`.
 
 ### M-E5. Cloudflare in front of the API
-1. DNS: `api` CNAME → Railway target, **Proxied** (orange cloud). WebSockets are on by default; confirm under Network.
+1. DNS: `tilawah-api` CNAME → Railway target, **Proxied** (orange cloud). WebSockets are on by default; confirm under Network.
 2. Rules → Transform Rules → Managed Transforms → turn on **Add visitor location headers**.
-3. Rules → Transform Rules → Modify request header → hostname equals `api.<domain>` → Set static `X-Origin-Auth` = the `ORIGIN_SECRET` value.
-4. Caching → Cache Rules → hostname equals `api.<domain>` AND URI path equals `/v1/presence.json` → Eligible for cache, Edge TTL **use cache-control header**.
-5. Verify: `curl -sI https://api.<domain>/v1/presence.json` twice; the second shows `cf-cache-status: HIT`. `curl -sI https://<railway-host>/v1/presence.json` returns 403 (origin secret enforced).
+3. Rules → Transform Rules → Modify request header → hostname equals `tilawah-api.mxmd.dev` → Set static `X-Origin-Auth` = the `ORIGIN_SECRET` value.
+4. Caching → Cache Rules → hostname equals `tilawah-api.mxmd.dev` AND URI path equals `/v1/presence.json` → Eligible for cache, Edge TTL **use cache-control header**.
+5. Verify: `curl -sI https://tilawah-api.mxmd.dev/v1/presence.json` twice; the second shows `cf-cache-status: HIT`. `curl -sI https://<railway-host>/v1/presence.json` returns 403 (origin secret enforced).
 
 ### M-E6. Cloudflare Pages for the web app
-1. Workers & Pages → Create → Pages → **Direct Upload** → project name `quran-global` (the GitHub Action uploads builds).
-2. Custom domain: `<domain>` (and `www.<domain>` redirect if wanted).
+1. Workers & Pages → Create → Pages → **Direct Upload** → project name `tilawah` (the GitHub Action uploads builds).
+2. Custom domain: `tilawah.mxmd.dev`.
 3. My Profile → API Tokens → create a token with **Cloudflare Pages: Edit**.
 4. GitHub repo → Settings → Secrets and variables → Actions:
    - Secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`
-   - Variables: `SITE_DOMAIN=<domain>`, `NEXT_PUBLIC_API_URL=https://api.<domain>`, `NEXT_PUBLIC_WS_URL=wss://api.<domain>/v1/ws` (the deploy workflow stays skipped until `SITE_DOMAIN` exists)
-5. Push to `main` (or re-run the `deploy-web` workflow) and open `https://<domain>`.
+   - Variables: `MEDIA_HOST=tilawah-media.mxmd.dev`, `API_HOST=tilawah-api.mxmd.dev`. The API and WebSocket URLs are derived from `API_HOST`, and the deploy workflow stays skipped until `API_HOST` exists.
+5. Push to `main` (or re-run the `deploy-web` workflow) and open `https://tilawah.mxmd.dev`.
 
 ### M-E7. Production load test (agent-assisted)
-Run `tools/loadtest` against `api.<domain>` with 5,000 clients for 10 minutes (plan 07, task 6). Confirm S8 in the spec and watch Railway's memory graph. Delete nothing afterwards; the test leaves no state.
+Run `tools/loadtest` against `tilawah-api.mxmd.dev` with 5,000 clients for 10 minutes (plan 07, task 6). Confirm S8 in the spec and watch Railway's memory graph. Delete nothing afterwards; the test leaves no state.
 
 ### M-E8. Real-device checks
 Using `/lab/audio` and the main page:

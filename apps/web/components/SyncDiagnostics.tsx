@@ -118,7 +118,7 @@ export default function SyncDiagnostics() {
 
   const report = () =>
     [
-      `Quran Global sync report ${new Date().toISOString()}`,
+      `Tilawah sync report ${new Date().toISOString()}`,
       `User agent: ${navigator.userAgent}`,
       ...rows.map(([k, v]) => `${k}: ${v}`),
       "Events (newest first):",

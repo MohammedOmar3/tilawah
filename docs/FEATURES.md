@@ -1,4 +1,4 @@
-# Quran Global: Feature List
+# Tilawah: Feature List
 
 Every MVP feature has an ID, the plan that builds it, and an acceptance check. "Later" features are listed so nothing in the MVP blocks them.
 

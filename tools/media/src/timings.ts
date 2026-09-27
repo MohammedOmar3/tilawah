@@ -25,7 +25,9 @@ export function convertQuranComTimings(src: QuranComRecitation, reciter: string,
     const [s, a] = ts.verse_key.split(":").map(Number);
     if (s !== surah) throw new Error(`verse ${ts.verse_key} is not in surah ${surah}`);
     if (a !== i + 1) throw new Error(`surah ${surah}: expected ayah ${i + 1}, got ${ts.verse_key}`);
-    segments.push({ ayah: a, startMs: shift(ts.timestamp_from), endMs: shift(ts.timestamp_to) });
+    const prevEnd = segments.at(-1)?.endMs ?? 0;
+    // Upstream data has rare overlaps (60:11/60:12); the earlier verse keeps its end.
+    segments.push({ ayah: a, startMs: Math.max(shift(ts.timestamp_from), prevEnd), endMs: shift(ts.timestamp_to) });
   });
 
   const first = segments[0];

@@ -43,7 +43,16 @@ describe("convertQuranComTimings", () => {
     expect(() => convertQuranComTimings(source(2, [["2:1", 0, 10], ["2:3", 10, 20]]), "alafasy")).toThrow(/ayah 2/);
   });
 
-  it("rejects overlaps", () => {
-    expect(() => convertQuranComTimings(source(2, [["2:1", 0, 30], ["2:2", 10, 40]]), "alafasy")).toThrow();
+  it("starts a verse that overlaps the previous one where the previous ends", () => {
+    // Quran.com's 60:12 starts 5.6 s before 60:11 ends; the previous verse's words run to its end.
+    const t = convertQuranComTimings(source(60, [["60:1", 0, 370], ["60:2", 364, 414]]), "alafasy");
+    expect(t.segments).toEqual([
+      { ayah: 1, startMs: 0, endMs: 370 },
+      { ayah: 2, startMs: 370, endMs: 414 },
+    ]);
+  });
+
+  it("rejects a verse swallowed by the previous one", () => {
+    expect(() => convertQuranComTimings(source(2, [["2:1", 0, 50], ["2:2", 10, 40]]), "alafasy")).toThrow();
   });
 });

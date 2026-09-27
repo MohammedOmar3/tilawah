@@ -18,7 +18,8 @@ export default function CountsBar({ listeners, countries, stale = false }: Count
   const l = listeners === null ? "—" : formatCount(listeners);
   const c = countries === null ? "—" : formatCount(countries);
   return (
-    <p
+    <div
+      role="group"
       data-testid="counts"
       data-listeners={listeners ?? ""}
       aria-label={label(listeners, countries)}
@@ -33,6 +34,6 @@ export default function CountsBar({ listeners, countries, stale = false }: Count
       <span aria-hidden="true">
         <span className="font-medium text-fg">{c}</span> {countries === 1 ? "country" : "countries"}
       </span>
-    </p>
+    </div>
   );
 }

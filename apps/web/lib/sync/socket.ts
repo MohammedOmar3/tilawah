@@ -93,6 +93,24 @@ export class SyncSocket {
     this.startBurst(RESYNC_BURST);
   }
 
+  /**
+   * The network came back (`online`): resync an open socket; if the socket is
+   * down and waiting in its backoff, skip the wait and connect now with the
+   * backoff reset. A handshake already in flight is left alone.
+   */
+  reconnectNow(): void {
+    if (this.closed) return;
+    if (this.connected) {
+      this.resync();
+      return;
+    }
+    if (this.reconnectTimer === null) return;
+    this.o.deps.clearTimeout(this.reconnectTimer);
+    this.reconnectTimer = null;
+    this.attempt = 0;
+    this.connect();
+  }
+
   setPlaying(playing: boolean): void {
     if (this.playing === playing) return;
     this.playing = playing;

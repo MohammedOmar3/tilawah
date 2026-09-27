@@ -198,6 +198,10 @@ export function createListeningSession(options: ListeningSessionOptions): Listen
     socket.resync();
     engine.correctNow();
   };
+  const onOnline = () => {
+    socket.reconnectNow();
+    engine.correctNow();
+  };
   const onVisibility = () => {
     if (deps.document?.visibilityState === "visible") wake();
   };
@@ -213,7 +217,7 @@ export function createListeningSession(options: ListeningSessionOptions): Listen
       intervals.push(deps.setInterval(uiTick, UI_TICK_MS));
       timers.push(deps.setTimeout(startAudio, SYNC_FALLBACK_MS));
       deps.document?.addEventListener("visibilitychange", onVisibility);
-      deps.window?.addEventListener("online", wake);
+      deps.window?.addEventListener("online", onOnline);
       socket.connect();
     },
     leave() {
@@ -225,7 +229,7 @@ export function createListeningSession(options: ListeningSessionOptions): Listen
       for (const id of timers) deps.clearTimeout(id);
       for (const id of intervals) deps.clearInterval(id);
       deps.document?.removeEventListener("visibilitychange", onVisibility);
-      deps.window?.removeEventListener("online", wake);
+      deps.window?.removeEventListener("online", onOnline);
       store.getState().reset();
     },
   };

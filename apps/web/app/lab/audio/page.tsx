@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import SyncDiagnostics from "@/components/SyncDiagnostics";
 
 export const metadata: Metadata = {
-  title: "Audio lab · Quran Global",
+  title: "Audio lab · Tilawah",
   robots: { index: false, follow: false },
 };
 

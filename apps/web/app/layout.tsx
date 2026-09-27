@@ -17,7 +17,7 @@ const amiriQuran = Amiri_Quran({
 });
 
 export const metadata: Metadata = {
-  title: "Quran Global",
+  title: "Tilawah",
   description: "One Quran. One moment. A world listening together.",
   icons: { apple: [{ url: "/icon-192.png", sizes: "192x192", type: "image/png" }] },
 };

@@ -4,8 +4,8 @@ import Link from "next/link";
 import programmeJson from "@/public/data/programme.json";
 
 export const metadata: Metadata = {
-  title: "Privacy · Quran Global",
-  description: "What Quran Global does and does not collect.",
+  title: "Privacy · Tilawah",
+  description: "What Tilawah does and does not collect.",
 };
 
 // Read at build time: the page credits whoever the live programme features.
@@ -29,7 +29,7 @@ export default function PrivacyPage() {
         </Link>
         <h1 className="text-2xl font-medium">Privacy</h1>
         <p className="text-muted">
-          Quran Global is built to know as little about you as possible. This page says exactly what happens when you
+          Tilawah is built to know as little about you as possible. This page says exactly what happens when you
           visit.
         </p>
       </header>

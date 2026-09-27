@@ -1,12 +1,12 @@
 # Runbook
 
-How to deploy, check and fix Quran Global in production. The architecture is in the spec (§3); the one-time setup is `docs/SETUP-MANUAL.md` Part 2.
+How to deploy, check and fix Tilawah in production. The architecture is in the spec (§3); the one-time setup is `docs/SETUP-MANUAL.md` Part 2.
 
 | Piece | Where | Config |
 |---|---|---|
 | API (`apps/api`) | Railway, one replica, `tilawah-api.mxmd.dev` behind Cloudflare | `railway.json`, `apps/api/Dockerfile`, Railway variables (spec §6) |
-| Web (`apps/web`) | Cloudflare Pages project `quran-global`, `tilawah.mxmd.dev` | `.github/workflows/deploy-web.yml`, `apps/web/public/_headers`, GitHub variables |
-| Audio | R2 bucket `quran-global-media`, `tilawah-media.mxmd.dev` | Cache rule: edge TTL 1 year |
+| Web (`apps/web`) | Cloudflare Pages project `tilawah`, `tilawah.mxmd.dev` | `.github/workflows/deploy-web.yml`, `apps/web/public/_headers`, GitHub variables |
+| Audio | R2 bucket `tilawah-media`, `tilawah-media.mxmd.dev` | Cache rule: edge TTL 1 year |
 
 ## Deploys
 
@@ -17,7 +17,7 @@ How to deploy, check and fix Quran Global in production. The architecture is in 
 ## Rollback
 
 - **Railway:** service → Deployments → pick the last good deployment → ⋯ → **Redeploy**. Then revert the bad commit on `main` so the next merge doesn't bring it back.
-- **Pages:** Workers & Pages → `quran-global` → Deployments → last good deployment → ⋯ → **Rollback to this deployment**. Revert the commit afterwards.
+- **Pages:** Workers & Pages → `tilawah` → Deployments → last good deployment → ⋯ → **Rollback to this deployment**. Revert the commit afterwards.
 - **Programme:** ship the previous `programme.json` under a new `version` (never reuse a version string) and set `PROGRAMME_VERSION` to it.
 
 ## Changing the programme

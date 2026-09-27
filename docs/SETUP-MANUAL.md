@@ -69,7 +69,7 @@ The site lives on a subdomain of `mxmd.dev`. Cloudflare's free Universal SSL cer
 4. Caching → Configuration → **Browser Cache TTL** → **Respect Existing Headers**. The default (4 hours) overwrites the API's `max-age=5` on `presence.json`, and browsers would then keep showing a 4-hour-old globe.
 
 ### M-E2. R2 bucket for audio
-1. R2 → Create bucket `quran-global-media` (location: automatic).
+1. R2 → Create bucket `tilawah-media` (location: automatic).
 2. Bucket → Settings → Custom domain → `tilawah-media.mxmd.dev`.
 3. Bucket → Settings → CORS: allow `GET, HEAD` from `https://tilawah.mxmd.dev`.
 4. Caching → Cache Rules → new rule: hostname equals `tilawah-media.mxmd.dev` → Eligible for cache, Edge TTL 1 year, Browser TTL 7 days.
@@ -101,7 +101,7 @@ Needs: the written permission from M-S5, the source recordings and verse timings
 5. Verify: `curl -sI https://tilawah-api.mxmd.dev/v1/presence.json` twice; the second shows `cf-cache-status: HIT`. `curl -sI https://<railway-host>/v1/presence.json` returns 403 (origin secret enforced).
 
 ### M-E6. Cloudflare Pages for the web app
-1. Workers & Pages → Create → Pages → **Direct Upload** → project name `quran-global` (the GitHub Action uploads builds).
+1. Workers & Pages → Create → Pages → **Direct Upload** → project name `tilawah` (the GitHub Action uploads builds).
 2. Custom domain: `tilawah.mxmd.dev`.
 3. My Profile → API Tokens → create a token with **Cloudflare Pages: Edit**.
 4. GitHub repo → Settings → Secrets and variables → Actions:

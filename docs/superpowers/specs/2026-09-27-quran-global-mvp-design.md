@@ -1,4 +1,4 @@
-# Quran Global MVP: Design Spec
+# Tilawah MVP: Design Spec
 
 Status: approved for planning · 2026-09-27
 Inputs: the product brief (project chat, 2026-09-27), `reviews/quran-global-brief-review.md`, `reviews/low-cost-architecture.md`.

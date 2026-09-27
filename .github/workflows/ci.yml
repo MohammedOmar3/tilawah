@@ -30,17 +30,27 @@ jobs:
             echo "::endgroup::"
           done
   e2e:
-    if: ${{ hashFiles('apps/web/e2e/*.spec.ts') != '' }}
     needs: [js, go]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - id: specs
+        name: check for e2e specs
+        run: |
+          if ls apps/web/e2e/*.spec.ts >/dev/null 2>&1; then echo "present=true" >> "$GITHUB_OUTPUT"; fi
+      - if: steps.specs.outputs.present == 'true'
+        uses: pnpm/action-setup@v4
+      - if: steps.specs.outputs.present == 'true'
+        uses: actions/setup-node@v4
         with: { node-version-file: .nvmrc, cache: pnpm }
-      - uses: actions/setup-go@v5
+      - if: steps.specs.outputs.present == 'true'
+        uses: actions/setup-go@v5
         with: { go-version: "1.24" }
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm data:dev
-      - run: pnpm --filter web exec playwright install --with-deps chromium
-      - run: pnpm --filter web e2e
+      - if: steps.specs.outputs.present == 'true'
+        run: pnpm install --frozen-lockfile
+      - if: steps.specs.outputs.present == 'true'
+        run: pnpm data:dev
+      - if: steps.specs.outputs.present == 'true'
+        run: pnpm --filter web exec playwright install --with-deps chromium
+      - if: steps.specs.outputs.present == 'true'
+        run: pnpm --filter web e2e

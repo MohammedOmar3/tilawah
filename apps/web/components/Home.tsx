@@ -22,11 +22,10 @@ import { exposeForTests } from "./test-hooks";
 
 /** Prefetch the next surah's text this long before the boundary. */
 const PREFETCH_TEXT_MS = 30_000;
-const SETTINGS_KEY = "tilawah.settings";
 
 function readAnnounce(): boolean {
   try {
-    return JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? "{}").announce === true;
+    return JSON.parse(localStorage.getItem("tilawah.settings") ?? "{}").announce === true;
   } catch {
     return false;
   }
@@ -34,7 +33,7 @@ function readAnnounce(): boolean {
 
 function saveAnnounce(announce: boolean): void {
   try {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify({ announce }));
+    localStorage.setItem("tilawah.settings", JSON.stringify({ announce }));
   } catch {
     /* private mode: the setting lasts for this visit only */
   }

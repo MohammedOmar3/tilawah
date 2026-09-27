@@ -50,6 +50,7 @@ func newFixture(t *testing.T, mutate func(*Handler)) *fixture {
 		Registry:  reg,
 		Telemetry: tel,
 		Limiter:   limits.New(cfg.MaxConns, cfg.MaxConnsPerIP, clk),
+		Hub:       NewHub(),
 		Locate: func(http.Header) (geo.Cell, bool) {
 			calls.Add(1)
 			return geo.Cell{Country: "AE", Lat: 25.5, Lng: 55.5}, true

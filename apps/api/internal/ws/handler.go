@@ -33,6 +33,8 @@ type Handler struct {
 	Registry  *presence.Registry
 	Telemetry *telemetry.Recorder
 	Limiter   *limits.Limiter
+	// Hub, when set, tracks sockets for graceful shutdown.
+	Hub *Hub
 	// Locate turns request headers into a snapped cell. It is called at most
 	// once per connection, at hello, and never for anonymous listeners.
 	Locate func(http.Header) (geo.Cell, bool)
@@ -63,6 +65,14 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	conn.SetReadLimit(readLimitBytes)
+
+	if h.Hub != nil {
+		unregister, ok := h.Hub.Register(conn)
+		if !ok {
+			return // shutting down; Register closed the socket
+		}
+		defer unregister()
+	}
 
 	s := newSession(h, conn, r.Header)
 	h.Log.Debug("ws open", "connections", h.Registry.Connections()+1)

@@ -1,0 +1,31 @@
+{
+  "surah": 112,
+  "reciter": "dev-tone",
+  "segments": [
+    {
+      "ayah": 0,
+      "startMs": 0,
+      "endMs": 3000
+    },
+    {
+      "ayah": 1,
+      "startMs": 3000,
+      "endMs": 13200
+    },
+    {
+      "ayah": 2,
+      "startMs": 13500,
+      "endMs": 23700
+    },
+    {
+      "ayah": 3,
+      "startMs": 24000,
+      "endMs": 34200
+    },
+    {
+      "ayah": 4,
+      "startMs": 34500,
+      "endMs": 45000
+    }
+  ]
+}

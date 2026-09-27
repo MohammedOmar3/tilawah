@@ -1,0 +1,41 @@
+{
+  "surah": 1,
+  "reciter": "dev-tone",
+  "segments": [
+    {
+      "ayah": 1,
+      "startMs": 0,
+      "endMs": 8271
+    },
+    {
+      "ayah": 2,
+      "startMs": 8571,
+      "endMs": 16842
+    },
+    {
+      "ayah": 3,
+      "startMs": 17142,
+      "endMs": 25413
+    },
+    {
+      "ayah": 4,
+      "startMs": 25713,
+      "endMs": 33984
+    },
+    {
+      "ayah": 5,
+      "startMs": 34284,
+      "endMs": 42555
+    },
+    {
+      "ayah": 6,
+      "startMs": 42855,
+      "endMs": 51126
+    },
+    {
+      "ayah": 7,
+      "startMs": 51426,
+      "endMs": 60000
+    }
+  ]
+}

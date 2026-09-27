@@ -1,0 +1,46 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  js:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm --filter web build
+  go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version: "1.24" }
+      - name: vet and test every Go module
+        run: |
+          for mod in $(git ls-files '*go.mod'); do
+            dir=$(dirname "$mod"); echo "::group::$dir"
+            (cd "$dir" && go vet ./... && go test -race ./...)
+            echo "::endgroup::"
+          done
+  e2e:
+    if: ${{ hashFiles('apps/web/e2e/*.spec.ts') != '' }}
+    needs: [js, go]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: pnpm }
+      - uses: actions/setup-go@v5
+        with: { go-version: "1.24" }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm data:dev
+      - run: pnpm --filter web exec playwright install --with-deps chromium
+      - run: pnpm --filter web e2e

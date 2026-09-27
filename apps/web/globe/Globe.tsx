@@ -2,8 +2,8 @@
 
 import type { Presence } from "@tilawah/contracts";
 import { OrbitControls } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
-import { type ComponentRef, type KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Canvas, useThree } from "@react-three/fiber";
+import { type ComponentRef, type KeyboardEvent, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MeshPhongMaterial, Spherical } from "three";
 import ThreeGlobe from "three-globe";
 import {
@@ -18,6 +18,7 @@ import {
   clampTilt,
   keyToAction,
 } from "./interaction";
+import { AUTO_ROTATE_SPEED, FrameDriver, SETTLE_MS, autoRotateAngle } from "./frames";
 import { loadLand } from "./land";
 import { type GlobePoint, cellsToPoints, colourFor, colourForWeight, heightFor } from "./layers";
 import { type Pulse, schedulePulses } from "./pulses";
@@ -40,6 +41,8 @@ const RING_LIFETIME_MS = 2400;
 const LAND_DOT_COLOUR = "rgba(160, 174, 192, 0.35)";
 const ringColour = () => (t: number) => `rgba(245,222,170,${1 - t})`;
 const DEG = Math.PI / 180;
+/** How long three-globe animates hexbin height changes. */
+const HEX_TRANSITION_MS = 1200;
 
 function countriesLabel(countries: number): string {
   if (countries === 0) return "Globe showing where people are listening";
@@ -74,6 +77,71 @@ function applyAction(controls: Controls, action: GlobeAction): void {
   controls.update();
 }
 
+interface DemandFramesProps {
+  controls: RefObject<Controls | null>;
+  /** Frames are wanted at all (the page is visible). */
+  enabled: boolean;
+  autoRotate: boolean;
+  /** Something moves until further notice (auto-rotation, live rings). */
+  continuous: boolean;
+  /** Changes identity whenever the scene's data changes. */
+  changed: unknown;
+  /** How long to keep rendering after a data change. */
+  settleMs: number;
+}
+
+/**
+ * Drives the `frameloop="demand"` canvas: requests frames at a capped rate
+ * while the globe moves and advances its auto-rotation by elapsed time, so it
+ * turns at the same speed at any frame rate. OrbitControls still requests its
+ * own frames while the user drags.
+ */
+function DemandFrames({ controls, enabled, autoRotate, continuous, changed, settleMs }: DemandFramesProps) {
+  const invalidate = useThree((s) => s.invalidate);
+  const driver = useRef<FrameDriver | null>(null);
+  const autoRotateRef = useRef(autoRotate);
+  const continuousRef = useRef(enabled && continuous);
+
+  useEffect(() => {
+    const d = new FrameDriver({
+      onFrame: (dtMs) => {
+        const c = controls.current;
+        if (autoRotateRef.current && c && dtMs > 0) {
+          // OrbitControls' autoRotate turns the camera left (theta decreases).
+          applyAction(c, { type: "rotate", degrees: -autoRotateAngle(dtMs, AUTO_ROTATE_SPEED) / DEG });
+        }
+        invalidate();
+      },
+      deps: {
+        now: () => performance.now(),
+        setInterval: (fn, ms) => window.setInterval(fn, ms),
+        clearInterval: (id) => window.clearInterval(id as number),
+      },
+    });
+    driver.current = d;
+    d.setContinuous(continuousRef.current);
+    return () => {
+      d.dispose();
+      driver.current = null;
+    };
+  }, [controls, invalidate]);
+
+  useEffect(() => {
+    autoRotateRef.current = autoRotate;
+  }, [autoRotate]);
+
+  useEffect(() => {
+    continuousRef.current = enabled && continuous;
+    driver.current?.setContinuous(continuousRef.current);
+  }, [enabled, continuous]);
+
+  useEffect(() => {
+    if (enabled) driver.current?.kick(settleMs);
+  }, [enabled, changed, settleMs]);
+
+  return null;
+}
+
 export default function Globe({ presence, pulseIntervalMs = 10_000, className }: GlobeProps) {
   const reducedMotion = useReducedMotion();
   const visible = usePageVisible();
@@ -81,6 +149,7 @@ export default function Globe({ presence, pulseIntervalMs = 10_000, className }:
 
   const [globeReady, setGlobeReady] = useState(false);
   const [canvasReady, setCanvasReady] = useState(false);
+  const [landVersion, setLandVersion] = useState(0);
   const [clock, setClock] = useState<{ last: number | null; now: number }>({ last: null, now: 0 });
   const idleTimer = useRef<number | undefined>(undefined);
 
@@ -110,7 +179,9 @@ export default function Globe({ presence, pulseIntervalMs = 10_000, className }:
     let cancelled = false;
     loadLand()
       .then((land) => {
-        if (!cancelled) globe.hexPolygonsData(land.features);
+        if (cancelled) return;
+        globe.hexPolygonsData(land.features);
+        setLandVersion((v) => v + 1);
       })
       .catch((err: unknown) => console.warn("Globe land outlines unavailable", err));
     return () => {
@@ -123,7 +194,7 @@ export default function Globe({ presence, pulseIntervalMs = 10_000, className }:
   useEffect(() => {
     const maxN = points.reduce((m, p) => Math.max(m, p.weight), 1);
     globe
-      .hexTransitionDuration(reducedMotion ? 0 : 1200)
+      .hexTransitionDuration(reducedMotion ? 0 : HEX_TRANSITION_MS)
       .hexAltitude((d: HexBin) => heightFor(d.sumWeight))
       .hexTopColor((d: HexBin) => colourForWeight(d.sumWeight, maxN))
       .hexSideColor((d: HexBin) => colourFor((Math.log(Math.max(1, d.sumWeight)) / Math.log(Math.max(2, maxN))) * 0.5))
@@ -196,8 +267,10 @@ export default function Globe({ presence, pulseIntervalMs = 10_000, className }:
   );
 
   const autoRotate = autoRotateEnabled({ reducedMotion, lastInteractionAt: clock.last, now: clock.now });
-  const frameloop = visible ? "always" : "never";
+  const frameloop = visible ? "demand" : "never";
   const ready = globeReady && canvasReady;
+  // Anything that changes what the globe draws, apart from motion.
+  const changed = useMemo(() => ({ points, landVersion, globeReady }), [points, landVersion, globeReady]);
 
   return (
     <div
@@ -229,9 +302,15 @@ export default function Globe({ presence, pulseIntervalMs = 10_000, className }:
           enableDamping
           rotateSpeed={0.4}
           zoomSpeed={0.6}
-          autoRotate={autoRotate}
-          autoRotateSpeed={0.25}
           onStart={markInteraction}
+        />
+        <DemandFrames
+          controls={controlsRef}
+          enabled={visible}
+          autoRotate={autoRotate}
+          continuous={autoRotate || ringCount > 0}
+          changed={changed}
+          settleMs={reducedMotion ? SETTLE_MS : HEX_TRANSITION_MS + SETTLE_MS}
         />
       </Canvas>
     </div>

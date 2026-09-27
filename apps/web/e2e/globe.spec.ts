@@ -19,7 +19,7 @@ test("renders the globe without console errors", async ({ page }) => {
   page.on("pageerror", (err) => errors.push(err.message));
 
   await openLab(page);
-  await expect(globe(page)).toHaveAttribute("data-frameloop", "always");
+  await expect(globe(page)).toHaveAttribute("data-frameloop", "demand");
   // Let a few frames render before checking for errors.
   await page.waitForTimeout(1000);
   expect(errors).toEqual([]);

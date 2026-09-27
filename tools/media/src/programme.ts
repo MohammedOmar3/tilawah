@@ -30,12 +30,19 @@ export function buildProgramme(i: BuildProgrammeInput): Programme {
   return Programme.parse({ version: i.version, epoch: i.epoch, reciter: i.reciter, tracks });
 }
 
-/** Encoded audio can come out slightly shorter than the source timings; clamp small overruns. */
+/**
+ * Source timings can end past the audio: encoding trims a few tens of ms, and some
+ * Quran.com timings overrun their own MP3 (14:52 by 2.9 s). End the last ayah at the
+ * audio's end, unless that would cut it by more than half, which means the timings
+ * don't belong to this file.
+ */
 export function clampTimings(t: Timings, durationMs: number): { timings: Timings; clampedMs: number } {
   const last = t.segments.at(-1)!;
   const over = last.endMs - durationMs;
   if (over <= 0) return { timings: t, clampedMs: 0 };
-  if (over >= 500) throw new Error(`surah ${t.surah}: timings run ${over} ms past the audio (limit 500 ms)`);
+  if (over * 2 > last.endMs - last.startMs) {
+    throw new Error(`surah ${t.surah}: timings run ${over} ms past the audio, more than half the last ayah`);
+  }
   const segments = [...t.segments.slice(0, -1), { ...last, endMs: durationMs }];
   return { timings: Timings.parse({ ...t, segments }), clampedMs: over };
 }

@@ -55,7 +55,12 @@ describe("clampTimings", () => {
     expect(clampTimings(t(1400), 1000)).toEqual({ timings: t(1000), clampedMs: 400 });
   });
 
-  it("fails an overrun of 500 ms or more", () => {
-    expect(() => clampTimings(t(1500), 1000)).toThrow(/500/);
+  it("clamps the last ayah when it keeps at least half its length", () => {
+    // Quran.com's 14:52 ends 2.9 s past its own MP3.
+    expect(clampTimings(t(1900), 1000)).toEqual({ timings: t(1000), clampedMs: 900 });
+  });
+
+  it("fails when the clamp would cut the last ayah by more than half", () => {
+    expect(() => clampTimings(t(2100), 1000)).toThrow(/half/);
   });
 });

@@ -281,6 +281,8 @@ export interface FakeAudioOptions {
   autoReadyMs?: number | null;
   /** Fire `playing` right after play() when ready (requires `time`). */
   autoPlaying?: boolean;
+  /** Fire `seeked` synchronously on every seek (default true). */
+  autoSeeked?: boolean;
 }
 
 export class FakeAudio implements AudioLike {
@@ -291,6 +293,8 @@ export class FakeAudio implements AudioLike {
   readyState = 0;
   stalled = false;
   readonly seeks: number[] = [];
+  /** Simulated time of each seek (when constructed with `time`). */
+  readonly seekTimes: number[] = [];
   readonly srcHistory: string[] = [];
   readonly rateHistory: number[] = [];
   loadCalls = 0;
@@ -332,6 +336,8 @@ export class FakeAudio implements AudioLike {
   set currentTime(v: number) {
     this.currentTimeValue = v;
     this.seeks.push(v);
+    if (this.opts.time) this.seekTimes.push(this.opts.time.now());
+    if (this.opts.autoSeeked ?? true) this.dispatch("seeked");
   }
 
   play(): Promise<void> {

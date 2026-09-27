@@ -1,0 +1,22 @@
+{
+  "programme": {
+    "version": "vectors.1",
+    "epoch": "2026-09-01T00:00:00Z",
+    "reciter": { "id": "dev-tone", "name": "Development tone", "riwayah": "hafs" },
+    "tracks": [
+      { "surah": 1, "durationMs": 60000, "audio": "/dev-audio/001.wav", "timings": "/data/timings/dev-tone/001.json" },
+      { "surah": 2, "durationMs": 45000, "audio": "/dev-audio/002.wav", "timings": "/data/timings/dev-tone/002.json" },
+      { "surah": 3, "durationMs": 30000, "audio": "/dev-audio/003.wav", "timings": "/data/timings/dev-tone/003.json" }
+    ]
+  },
+  "cases": [
+    { "name": "at epoch", "nowMs": 1788220800000, "trackIndex": 0, "posInTrackMs": 0, "loop": 0 },
+    { "name": "end of track 0", "nowMs": 1788220859999, "trackIndex": 0, "posInTrackMs": 59999, "loop": 0 },
+    { "name": "start of track 1", "nowMs": 1788220860000, "trackIndex": 1, "posInTrackMs": 0, "loop": 0 },
+    { "name": "end of track 1", "nowMs": 1788220904999, "trackIndex": 1, "posInTrackMs": 44999, "loop": 0 },
+    { "name": "start of track 2", "nowMs": 1788220905000, "trackIndex": 2, "posInTrackMs": 0, "loop": 0 },
+    { "name": "wraps to track 0", "nowMs": 1788220935000, "trackIndex": 0, "posInTrackMs": 0, "loop": 1 },
+    { "name": "loop 1000 track 1", "nowMs": 1788355870000, "trackIndex": 1, "posInTrackMs": 10000, "loop": 1000 },
+    { "name": "before epoch", "nowMs": 1788220799000, "trackIndex": 2, "posInTrackMs": 29000, "loop": -1 }
+  ]
+}

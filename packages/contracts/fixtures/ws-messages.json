@@ -1,0 +1,62 @@
+{
+  "clientValid": [
+    {
+      "t": "hello",
+      "v": 1,
+      "anon": false,
+      "programme": "dev"
+    },
+    {
+      "t": "ping",
+      "id": 1,
+      "c": 12345.5
+    },
+    {
+      "t": "state",
+      "playing": true
+    },
+    {
+      "t": "hb"
+    },
+    {
+      "t": "stat",
+      "rttMs": 80,
+      "offsetMs": -12.5,
+      "errMs": 18
+    }
+  ],
+  "clientInvalid": [
+    {
+      "t": "hello",
+      "v": 2,
+      "anon": false,
+      "programme": "dev"
+    },
+    {
+      "t": "ping",
+      "id": "x",
+      "c": 1
+    },
+    {
+      "t": "nope"
+    }
+  ],
+  "serverValid": [
+    {
+      "t": "welcome",
+      "v": 1,
+      "programme": "dev",
+      "s": 1788220800000
+    },
+    {
+      "t": "pong",
+      "id": 1,
+      "c": 12345.5,
+      "s": 1788220800001
+    },
+    {
+      "t": "programme",
+      "version": "2026-09-27.2"
+    }
+  ]
+}

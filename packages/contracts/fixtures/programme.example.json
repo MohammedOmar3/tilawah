@@ -1,0 +1,29 @@
+{
+  "version": "vectors.1",
+  "epoch": "2026-09-01T00:00:00Z",
+  "reciter": {
+    "id": "dev-tone",
+    "name": "Development tone",
+    "riwayah": "hafs"
+  },
+  "tracks": [
+    {
+      "surah": 1,
+      "durationMs": 60000,
+      "audio": "/dev-audio/001.wav",
+      "timings": "/data/timings/dev-tone/001.json"
+    },
+    {
+      "surah": 2,
+      "durationMs": 45000,
+      "audio": "/dev-audio/002.wav",
+      "timings": "/data/timings/dev-tone/002.json"
+    },
+    {
+      "surah": 3,
+      "durationMs": 30000,
+      "audio": "/dev-audio/003.wav",
+      "timings": "/data/timings/dev-tone/003.json"
+    }
+  ]
+}

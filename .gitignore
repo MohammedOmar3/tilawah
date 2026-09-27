@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+coverage/
+*.log
+.env*
+!.env.example
+!.env.development
+apps/web/public/dev-audio/
+apps/api/bin/
+playwright-report/
+test-results/
+*.tsbuildinfo
+next-env.d.ts
+.claude/worktrees/

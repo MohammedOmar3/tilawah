@@ -1,0 +1,22 @@
+{
+  "withIntro": {
+    "segments": [
+      { "ayah": 0, "startMs": 0, "endMs": 4000 },
+      { "ayah": 1, "startMs": 4200, "endMs": 9000 },
+      { "ayah": 2, "startMs": 9000, "endMs": 15000 },
+      { "ayah": 3, "startMs": 15500, "endMs": 20000 }
+    ],
+    "cases": [
+      { "posMs": 0, "ayah": 0 }, { "posMs": 3999, "ayah": 0 }, { "posMs": 4000, "ayah": 0 },
+      { "posMs": 4200, "ayah": 1 }, { "posMs": 8999, "ayah": 1 }, { "posMs": 9000, "ayah": 2 },
+      { "posMs": 15200, "ayah": 2 }, { "posMs": 15500, "ayah": 3 }, { "posMs": 25000, "ayah": 3 }
+    ]
+  },
+  "noIntro": {
+    "segments": [
+      { "ayah": 1, "startMs": 500, "endMs": 3000 },
+      { "ayah": 2, "startMs": 3000, "endMs": 6000 }
+    ],
+    "cases": [ { "posMs": 100, "ayah": 0 }, { "posMs": 500, "ayah": 1 }, { "posMs": 5999, "ayah": 2 } ]
+  }
+}

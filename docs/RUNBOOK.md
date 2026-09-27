@@ -4,14 +4,14 @@ How to deploy, check and fix Quran Global in production. The architecture is in 
 
 | Piece | Where | Config |
 |---|---|---|
-| API (`apps/api`) | Railway, one replica, `api.<domain>` behind Cloudflare | `railway.json`, `apps/api/Dockerfile`, Railway variables (spec §6) |
-| Web (`apps/web`) | Cloudflare Pages project `quran-global`, `<domain>` | `.github/workflows/deploy-web.yml`, `apps/web/public/_headers`, GitHub variables |
-| Audio | R2 bucket `quran-global-media`, `media.<domain>` | Cache rule: edge TTL 1 year |
+| API (`apps/api`) | Railway, one replica, `tilawah-api.mxmd.dev` behind Cloudflare | `railway.json`, `apps/api/Dockerfile`, Railway variables (spec §6) |
+| Web (`apps/web`) | Cloudflare Pages project `quran-global`, `tilawah.mxmd.dev` | `.github/workflows/deploy-web.yml`, `apps/web/public/_headers`, GitHub variables |
+| Audio | R2 bucket `quran-global-media`, `tilawah-media.mxmd.dev` | Cache rule: edge TTL 1 year |
 
 ## Deploys
 
 - **API:** merge to `main`. Railway builds `apps/api/Dockerfile` when anything under `apps/api/**` (or `railway.json`) changes, waits for `/healthz`, then stops the old container. On SIGTERM the server closes every socket with 1012; browsers reconnect with backoff and full jitter (1 s, 2 s, 4 s … 30 s), so the reconnect wave is spread out. **Audio keeps playing through the gap**, because position comes from the clock, not the server. Counts pause for a few seconds and recover within one snapshot interval.
-- **Web:** merge to `main`. The `deploy-web` workflow builds the static export, fills `__DOMAIN__` into `_headers` and uploads to Pages. It can also be run by hand (Actions → deploy-web → Run workflow). It is skipped while the `SITE_DOMAIN` variable is missing.
+- **Web:** merge to `main`. The `deploy-web` workflow builds the static export, fills the `MEDIA_HOST` and `API_HOST` variables into `_headers` and uploads to Pages. It can also be run by hand (Actions → deploy-web → Run workflow). It is skipped while the `API_HOST` variable is missing.
 - Keep one replica. Presence lives in memory (spec D5); a second replica would split the counts.
 
 ## Rollback
@@ -30,10 +30,10 @@ How to deploy, check and fix Quran Global in production. The architecture is in 
 
 ## Health checks
 
-- `curl https://api.<domain>/healthz` → `ok` (exempt from the origin secret).
-- Through Cloudflare: `curl -s https://api.<domain>/v1/stats -H "Authorization: Bearer $STATS_TOKEN"` → connections, listeners, p50/p95 of `rttMs`, `|errMs|` and offset change over 10 minutes, Go memory. Healthy: p95 `absErrMs` < 250, `memory.sysBytes` well under 400 MB (313 MB at 5,000 sockets in the load test, most of it GC headroom). If memory approaches 400 MB, set `GOMEMLIMIT=320MiB` on Railway.
-- `curl -sI https://api.<domain>/v1/presence.json` twice: the second says `cf-cache-status: HIT`.
-- Cloudflare → Analytics → Cache: hit ratio for `media.<domain>` and `/v1/presence.json` should stay above 95 %. A low ratio means Railway (for presence) or R2 operations (for audio) are doing work Cloudflare should be absorbing.
+- `curl https://tilawah-api.mxmd.dev/healthz` → `ok` (exempt from the origin secret).
+- Through Cloudflare: `curl -s https://tilawah-api.mxmd.dev/v1/stats -H "Authorization: Bearer $STATS_TOKEN"` → connections, listeners, p50/p95 of `rttMs`, `|errMs|` and offset change over 10 minutes, Go memory. Healthy: p95 `absErrMs` < 250, `memory.sysBytes` well under 400 MB (313 MB at 5,000 sockets in the load test, most of it GC headroom). If memory approaches 400 MB, set `GOMEMLIMIT=320MiB` on Railway.
+- `curl -sI https://tilawah-api.mxmd.dev/v1/presence.json` twice: the second says `cf-cache-status: HIT`.
+- Cloudflare → Analytics → Cache: hit ratio for `tilawah-media.mxmd.dev` and `/v1/presence.json` should stay above 95 %. A low ratio means Railway (for presence) or R2 operations (for audio) are doing work Cloudflare should be absorbing.
 - Railway → service → Metrics: memory flat, CPU low, network egress roughly linear in listeners.
 
 ## Cost checks

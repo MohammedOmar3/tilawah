@@ -2,7 +2,7 @@
 
 ## 2026-09-27: local, 5,000 clients, 10 minutes
 
-**Verdict: S7 and S8 pass locally.** Production confirmation is M-E7 (run the same command against `wss://api.<domain>/v1/ws` through Cloudflare).
+**Verdict: S7 and S8 pass locally.** Production confirmation is M-E7 (run the same command against `wss://tilawah-api.mxmd.dev/v1/ws` through Cloudflare).
 
 | Check | Target | Result |
 |---|---|---|
@@ -100,6 +100,6 @@ t=10m0s joined=5000 | conns=5000 sys=323.2MB rss=313.0MB
 
 ## Running it again
 
-- Against production (M-E7): `go run . -url wss://api.<domain>/v1/ws -n 5000 -ramp 60s -duration 10m -origin https://<domain> -stats-token $STATS_TOKEN`. The tester sends no `X-Origin-Auth` unless `-secret` is given; Cloudflare adds it. Over `wss://` the counted bytes already include TLS, and the wire model drops its TLS terms. `MAX_CONNS_PER_IP` (default 5) will refuse a single machine's 5,000 sockets unless raised for the test window.
+- Against production (M-E7): `go run . -url wss://tilawah-api.mxmd.dev/v1/ws -n 5000 -ramp 60s -duration 10m -origin https://tilawah.mxmd.dev -stats-token $STATS_TOKEN`. The tester sends no `X-Origin-Auth` unless `-secret` is given; Cloudflare adds it. Over `wss://` the counted bytes already include TLS, and the wire model drops its TLS terms. `MAX_CONNS_PER_IP` (default 5) will refuse a single machine's 5,000 sockets unless raised for the test window.
 - `-country` only matters against a server with `TRUST_CF_HEADERS=true`; in production Cloudflare sets the `cf-*` headers from the tester's real location.
 - `-hb`, `-resync` and `-stat` compress the schedule for quick checks; the dollar projection is only meaningful with the production defaults.

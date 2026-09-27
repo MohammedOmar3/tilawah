@@ -59,9 +59,9 @@ Further assumptions made while planning:
 Browser
  ├─ Web app ─────────────► Cloudflare Pages (free)        static Next.js export
  │                          /data/*.json  (surahs, text, timings, programme)
- ├─ Audio ───────────────► media.<domain> → Cloudflare cache → R2 (free egress)
- ├─ GET /v1/presence.json► api.<domain> → Cloudflare cache (s-maxage=10) → Go
- └─ WS  /v1/ws ──────────► api.<domain> → Cloudflare proxy → Go on Railway
+ ├─ Audio ───────────────► tilawah-media.mxmd.dev → Cloudflare cache → R2 (free egress)
+ ├─ GET /v1/presence.json► tilawah-api.mxmd.dev → Cloudflare cache (s-maxage=10) → Go
+ └─ WS  /v1/ws ──────────► tilawah-api.mxmd.dev → Cloudflare proxy → Go on Railway
                             clock sync, presence, telemetry. Almost nothing sent back.
 ```
 
@@ -140,7 +140,7 @@ All shapes below are normative. `packages/contracts/fixtures/` holds example fil
   ]
 }
 ```
-`audio` may be absolute (`https://media.<domain>/...`) or root-relative. `durationMs` is the exact decoded duration of the audio file.
+`audio` may be absolute (`https://tilawah-media.mxmd.dev/...`) or root-relative. `durationMs` is the exact decoded duration of the audio file.
 
 ### 4.5 WebSocket protocol v1 (`/v1/ws`, JSON text frames, max 1 KB inbound)
 

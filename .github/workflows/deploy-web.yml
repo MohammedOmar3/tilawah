@@ -7,9 +7,9 @@ on:
 concurrency: { group: deploy-web, cancel-in-progress: true }
 jobs:
   deploy:
-    # Skipped until Manual step M-E6 adds the SITE_DOMAIN variable, so it never
+    # Skipped until Manual step M-E6 adds the API_HOST variable, so it never
     # fails before Cloudflare is set up.
-    if: ${{ vars.SITE_DOMAIN != '' }}
+    if: ${{ vars.API_HOST != '' }}
     runs-on: ubuntu-latest
     permissions: { contents: read, deployments: write }
     steps:
@@ -21,18 +21,22 @@ jobs:
       - run: pnpm data:validate
       - run: pnpm --filter web build
         env:
-          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
-          NEXT_PUBLIC_WS_URL: ${{ vars.NEXT_PUBLIC_WS_URL }}
+          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL || format('https://{0}', vars.API_HOST) }}
+          NEXT_PUBLIC_WS_URL: ${{ vars.NEXT_PUBLIC_WS_URL || format('wss://{0}/v1/ws', vars.API_HOST) }}
           NEXT_PUBLIC_RATE_NUDGE_MAX: ${{ vars.NEXT_PUBLIC_RATE_NUDGE_MAX || '0.02' }}
           NEXT_PUBLIC_TRANSLATION_ID: ${{ vars.NEXT_PUBLIC_TRANSLATION_ID }}
-      # The domain goes through env rather than being spliced into the script,
+      # The hosts go through env rather than being spliced into the script,
       # so a variable value can never be executed as shell.
-      - name: fill the domain into _headers
+      - name: fill the media and API hosts into _headers
         env:
-          SITE_DOMAIN: ${{ vars.SITE_DOMAIN }}
+          MEDIA_HOST: ${{ vars.MEDIA_HOST }}
+          API_HOST: ${{ vars.API_HOST }}
         run: |
-          sed -i "s/__DOMAIN__/${SITE_DOMAIN}/g" apps/web/out/_headers
-          if grep -q "__DOMAIN__" apps/web/out/_headers; then echo "placeholder left in _headers"; exit 1; fi
+          for h in "$MEDIA_HOST" "$API_HOST"; do
+            if ! [[ "$h" =~ ^[a-z0-9.-]+$ ]]; then echo "MEDIA_HOST and API_HOST must be bare hostnames, got '$h'"; exit 1; fi
+          done
+          sed -i -e "s/__MEDIA_HOST__/${MEDIA_HOST}/g" -e "s/__API_HOST__/${API_HOST}/g" apps/web/out/_headers
+          if grep -q "__[A-Z_]*_HOST__" apps/web/out/_headers; then echo "placeholder left in _headers"; exit 1; fi
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

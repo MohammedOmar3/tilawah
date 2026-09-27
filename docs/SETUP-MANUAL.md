@@ -66,6 +66,7 @@ The site lives on a subdomain of `mxmd.dev`. Cloudflare's free Universal SSL cer
 1. Create a free Cloudflare account and add `mxmd.dev` (skip if it's already there); switch the registrar's nameservers to Cloudflare's. R2, Pages and the zone must be in the same Cloudflare account.
 2. SSL/TLS → Overview → **Full (strict)**.
 3. Caching → Tiered Cache → turn on **Smart Tiered Caching** (free).
+4. Caching → Configuration → **Browser Cache TTL** → **Respect Existing Headers**. The default (4 hours) overwrites the API's `max-age=5` on `presence.json`, and browsers would then keep showing a 4-hour-old globe.
 
 ### M-E2. R2 bucket for audio
 1. R2 → Create bucket `quran-global-media` (location: automatic).

@@ -19,6 +19,15 @@ jobs:
         with: { node-version-file: .nvmrc, cache: pnpm }
       - run: pnpm install --frozen-lockfile
       - run: pnpm data:validate
+      # The dev test-tone WAVs are generated, not committed. Until plan 08 ships
+      # the real recitation on R2, the live programme points at them, so the
+      # upload has to include them.
+      - name: generate dev audio while the programme uses the test tone
+        run: |
+          if [ "$(jq -r .reciter.id apps/web/public/data/programme.json)" = "dev-tone" ]; then
+            pnpm data:dev
+            git diff --exit-code apps/web/public/data
+          fi
       - run: pnpm --filter web build
         env:
           NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL || format('https://{0}', vars.API_HOST) }}

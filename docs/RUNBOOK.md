@@ -6,7 +6,7 @@ How to deploy, check and fix Tilawah in production. The architecture is in the s
 |---|---|---|
 | API (`apps/api`) | Railway, one replica, `tilawah-api.mxmd.dev` behind Cloudflare | `railway.json`, `apps/api/Dockerfile`, Railway variables (spec §6) |
 | Web (`apps/web`) | Cloudflare Pages project `tilawah`, `tilawah.mxmd.dev` | `.github/workflows/deploy-web.yml`, `apps/web/public/_headers`, GitHub variables |
-| Audio | R2 bucket `tilawah-media`, `tilawah-media.mxmd.dev` | Cache rule: edge TTL 1 year |
+| Audio | R2 bucket `quran-tilawah-media`, `tilawah-media.mxmd.dev` | Cache rule: edge TTL 1 year |
 
 ## Deploys
 

@@ -69,14 +69,14 @@ The site lives on a subdomain of `mxmd.dev`. Cloudflare's free Universal SSL cer
 4. Caching → Configuration → **Browser Cache TTL** → **Respect Existing Headers**. The default (4 hours) overwrites the API's `max-age=5` on `presence.json`, and browsers would then keep showing a 4-hour-old globe.
 
 ### M-E2. R2 bucket for audio
-1. R2 → Create bucket `tilawah-media` (location: automatic).
+1. R2 → Create bucket `quran-tilawah-media` (location: automatic).
 2. Bucket → Settings → Custom domain → `tilawah-media.mxmd.dev`.
 3. Bucket → Settings → CORS: allow `GET, HEAD` from `https://tilawah.mxmd.dev`.
 4. Caching → Cache Rules → new rule: hostname equals `tilawah-media.mxmd.dev` → Eligible for cache, Edge TTL 1 year, Browser TTL 7 days.
 5. R2 → Manage API tokens → create a token with **Object Read & Write** on this bucket. Keep the access key ID, secret and account ID for M-E3.
 
 ### M-E3. Ingest real audio (agent-assisted, runs plan 08)
-Needs: the written permission from M-S5, the source recordings and verse timings, ffmpeg, and the R2 token from M-E2 exported as `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_ACCOUNT_ID`. Plan 08 encodes, measures durations, builds the production `programme.json` and timings, and uploads to R2.
+Needs: the written permission from M-S5, the source recordings and verse timings, ffmpeg, and the R2 token from M-E2 exported as `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_ACCOUNT_ID`, plus `R2_BUCKET=quran-tilawah-media`. Plan 08 encodes, measures durations, builds the production `programme.json` and timings, and uploads to R2.
 
 ### M-E4. Railway service for the API
 1. Railway → subscribe to **Hobby** ($5/month, includes $5 of usage).

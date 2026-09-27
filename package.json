@@ -8,6 +8,7 @@
     "lint": "pnpm -r --if-present lint",
     "test": "pnpm -r --if-present test",
     "data:build": "pnpm --filter quran-data build",
-    "data:dev": "pnpm --filter quran-data dev-programme"
+    "data:dev": "pnpm --filter quran-data dev-programme",
+    "data:validate": "pnpm --filter quran-data validate"
   }
 }

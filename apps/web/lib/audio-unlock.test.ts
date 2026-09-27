@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { createAudioPool, SILENT_WAV } from "./audio-unlock";
 
@@ -70,5 +72,14 @@ describe("audio pool", () => {
     const pool = createAudioPool(2, () => queue.shift()!);
     expect(() => pool.unlock()).not.toThrow();
     await Promise.resolve();
+  });
+});
+
+describe("Pages CSP", () => {
+  it("lets media load the data: URL the unlock plays", () => {
+    const headers = readFileSync(join(process.cwd(), "public/_headers"), "utf8");
+    const mediaSrc = /media-src ([^;]+)/.exec(headers)?.[1] ?? "";
+    expect(SILENT_WAV.startsWith("data:")).toBe(true);
+    expect(mediaSrc.split(" ")).toContain("data:");
   });
 });

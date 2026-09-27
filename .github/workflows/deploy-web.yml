@@ -1,0 +1,40 @@
+name: deploy-web
+on:
+  push:
+    branches: [main]
+    paths: ["apps/web/**", "packages/**", "pnpm-lock.yaml", ".github/workflows/deploy-web.yml"]
+  workflow_dispatch:
+concurrency: { group: deploy-web, cancel-in-progress: true }
+jobs:
+  deploy:
+    # Skipped until Manual step M-E6 adds the SITE_DOMAIN variable, so it never
+    # fails before Cloudflare is set up.
+    if: ${{ vars.SITE_DOMAIN != '' }}
+    runs-on: ubuntu-latest
+    permissions: { contents: read, deployments: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm data:validate
+      - run: pnpm --filter web build
+        env:
+          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_WS_URL: ${{ vars.NEXT_PUBLIC_WS_URL }}
+          NEXT_PUBLIC_RATE_NUDGE_MAX: ${{ vars.NEXT_PUBLIC_RATE_NUDGE_MAX || '0.02' }}
+          NEXT_PUBLIC_TRANSLATION_ID: ${{ vars.NEXT_PUBLIC_TRANSLATION_ID }}
+      # The domain goes through env rather than being spliced into the script,
+      # so a variable value can never be executed as shell.
+      - name: fill the domain into _headers
+        env:
+          SITE_DOMAIN: ${{ vars.SITE_DOMAIN }}
+        run: |
+          sed -i "s/__DOMAIN__/${SITE_DOMAIN}/g" apps/web/out/_headers
+          if grep -q "__DOMAIN__" apps/web/out/_headers; then echo "placeholder left in _headers"; exit 1; fi
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/web/out --project-name=quran-global --branch=main

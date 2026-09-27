@@ -13,7 +13,11 @@ export default defineConfig({
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
-        launchOptions: { args: ["--autoplay-policy=no-user-gesture-required"] },
+        launchOptions: {
+          args: ["--autoplay-policy=no-user-gesture-required"],
+          // Cloud sessions ship a pre-installed Chromium; CI installs its own.
+          executablePath: process.env.PW_CHROMIUM_PATH || undefined,
+        },
       },
     },
   ],

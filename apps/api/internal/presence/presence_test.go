@@ -172,7 +172,12 @@ func TestSnapshotHasNoRawCoordinates(t *testing.T) {
 
 func TestSnapshotIsSorted(t *testing.T) {
 	r := New(1, fakeCentroids{})
-	for _, c := range []geo.Cell{{"ID", -7.5, 106.5}, {"AE", 25.5, 55.5}, {"GB", 52.5, -1.5}, {"AE", 25.5, 52.5}} {
+	for _, c := range []geo.Cell{
+		{Country: "ID", Lat: -7.5, Lng: 106.5},
+		{Country: "AE", Lat: 25.5, Lng: 55.5},
+		{Country: "GB", Lat: 52.5, Lng: -1.5},
+		{Country: "AE", Lat: 25.5, Lng: 52.5},
+	} {
 		joinPlaying(r, &c, false, 1)
 	}
 	assertEq(t, r.Snapshot().Cells, []Cell{{-7.5, 106.5, 1}, {25.5, 52.5, 1}, {25.5, 55.5, 1}, {52.5, -1.5, 1}})

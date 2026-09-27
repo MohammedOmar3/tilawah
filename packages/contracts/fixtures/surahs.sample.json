@@ -1,0 +1,18 @@
+[
+  {
+    "number": 1,
+    "nameArabic": "الفاتحة",
+    "nameTransliterated": "Al-Faatiha",
+    "nameEnglish": "The Opening",
+    "ayahCount": 7,
+    "revelation": "meccan"
+  },
+  {
+    "number": 112,
+    "nameArabic": "الإخلاص",
+    "nameTransliterated": "Al-Ikhlaas",
+    "nameEnglish": "Sincerity",
+    "ayahCount": 4,
+    "revelation": "meccan"
+  }
+]

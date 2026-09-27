@@ -209,7 +209,7 @@ export default function Globe({ presence, pulseIntervalMs = 10_000, className }:
       data-autorotate={String(autoRotate)}
       data-frameloop={frameloop}
       data-rings={ringCount}
-      className={`relative h-full w-full rounded-full outline-none focus-visible:ring-2 focus-visible:ring-[#d4af6b]/60 ${className ?? ""}`}
+      className={`relative h-full w-full outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#d4af6b]/50 ${className ?? ""}`}
     >
       <Canvas
         dpr={[1, 2]}

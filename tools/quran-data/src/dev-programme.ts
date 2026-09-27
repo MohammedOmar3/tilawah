@@ -1,6 +1,6 @@
 import { Programme, Surahs } from "@tilawah/contracts";
 import type { Track } from "@tilawah/contracts";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { DEV_RECITER_ID, devTimings } from "./lib/dev-timings";
@@ -58,8 +58,13 @@ async function main(): Promise<void> {
   });
   const json = JSON.stringify(programme, null, 2) + "\n";
   await writeFile(path.join(webDataDir, "programme.dev.json"), json);
-  await writeFile(path.join(webDataDir, "programme.json"), json);
-  console.log(`wrote programme.dev.json, programme.json, ${tracks.length} timings and ${tracks.length} WAVs`);
+  // programme.json is the live programme; only overwrite it while it is still the dev one.
+  const livePath = path.join(webDataDir, "programme.json");
+  const live = existsSync(livePath) ? (JSON.parse(readFileSync(livePath, "utf8")) as { reciter?: { id?: string } }) : null;
+  const replaceLive = live === null || live.reciter?.id === DEV_RECITER_ID;
+  if (replaceLive) await writeFile(livePath, json);
+  const files = replaceLive ? "programme.dev.json, programme.json" : "programme.dev.json (kept the production programme.json)";
+  console.log(`wrote ${files}, ${tracks.length} timings and ${tracks.length} WAVs`);
 }
 
 await main();

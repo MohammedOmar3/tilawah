@@ -22,7 +22,7 @@ How to deploy, check and fix Tilawah in production. The architecture is in the s
 
 ## Changing the programme
 
-1. Build the new programme and timings with the plan 08 tooling (`tools/media`); never edit `programme.json` or the Quran text by hand.
+1. Build the new programme and timings with `tools/media` (steps in `tools/media/README.md`; set `NODE_USE_ENV_PROXY=1` behind a proxy); never edit `programme.json` or the Quran text by hand.
 2. Bump `version` (`YYYY-MM-DD.N`).
 3. Open a PR; on merge, `deploy-web` publishes the new `/data/programme.json` (browser cache: 60 s).
 4. Set `PROGRAMME_VERSION=<version>` on Railway (this redeploys the API). Clients whose `hello` carries an older version get a `programme` message after `welcome` and reload the programme.

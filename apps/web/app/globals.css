@@ -1,54 +1,262 @@
 @import "tailwindcss";
 
-/* Dark, calm palette. Every colour in the UI comes from these. */
+/*
+ * Two calm palettes. Fajr (light) is the base; Night (dark) replaces it when the
+ * listener picks Night, or picks Auto on a device that prefers dark. The html
+ * element carries data-theme="night" | "fajr" when a theme is chosen, none for Auto.
+ * The --g-* and --sky-* tokens colour the globe and the sky behind it.
+ */
 :root {
-  --bg: #070b12;
-  --bg-raised: #0d1420;
-  --fg: #e8e6e1;
-  --muted: #8a93a3;
-  --gold: #d4af6b;
-  --gold-bright: #f5deaa;
-  --line: rgba(232, 230, 225, 0.12);
+  --bg: #f5efe3;
+  --bg-2: #efe6d4;
+  --surface: #fffcf5;
+  --surface-glass: rgba(255, 252, 245, 0.8);
+  --line: rgba(80, 60, 20, 0.12);
+  --line-strong: rgba(80, 60, 20, 0.22);
+  --ink: #241d10;
+  --ink-2: #5e5442;
+  --ink-3: #7a6f5c;
+  --gold: #8a6810;
+  --gold-soft: #c9a13e;
+  --gold-wash: rgba(201, 161, 62, 0.14);
+  --presence: #0f8a7e;
+  --presence-glow: rgba(15, 138, 126, 0.35);
+  --warn: #b06a12;
+  --danger: #c0504a;
+  --on-gold: #fffaf0;
+  --shadow: 0 18px 50px -24px rgba(80, 60, 20, 0.35);
+  --glow: radial-gradient(ellipse 80% 60% at 50% 62%, rgba(236, 200, 110, 0.32), transparent 70%);
+  --scrim: rgba(36, 29, 16, 0.3);
+  --g-ocean-a: #d8c7a2;
+  --g-ocean-b: #fcf7ec;
+  --g-rim: #efd9a4;
+  --g-land: #7d5f22;
+  --g-grid: #a88845;
+  --g-atmo: #e2b650;
+  --g-atmo-a: 0.45;
+  --g-cell: #e0a53a;
+  --g-cell-add: 0;
+  --g-pin-a: #f2b632;
+  --g-pin-b: #e2711d;
+  --g-pin-fill: rgba(255, 251, 240, 0.92);
+  --g-land-lit: 0.6;
+  --sky-a: #a8823a;
+  --sky-b: #cf8b3a;
+  --sky-c: #8f7d5a;
+  --sky-alpha: 0.75;
+  --sky-add: 0;
+  --neb-1: #f2a65a;
+  --neb-2: #e98f7a;
+  --neb-3: #f5c96a;
+  --neb-alpha: 0.95;
+  --theme-colour: #f5efe3;
+  color-scheme: light;
+}
+
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="fajr"]) {
+    --bg: #050913;
+    --bg-2: #0b1120;
+    --surface: #111726;
+    --surface-glass: rgba(12, 17, 30, 0.72);
+    --line: rgba(255, 255, 255, 0.07);
+    --line-strong: rgba(255, 255, 255, 0.14);
+    --ink: #eef1f8;
+    --ink-2: #aab4c8;
+    --ink-3: #7d89a3;
+    --gold: #e8c35e;
+    --gold-soft: #c9a13e;
+    --gold-wash: rgba(232, 195, 94, 0.1);
+    --presence: #6fd0f5;
+    --presence-glow: rgba(111, 208, 245, 0.45);
+    --warn: #f0b35a;
+    --danger: #e0706a;
+    --on-gold: #1a1405;
+    --shadow: 0 24px 60px -28px rgba(0, 0, 0, 0.8);
+    --glow: radial-gradient(ellipse 80% 60% at 50% 62%, rgba(30, 70, 130, 0.35), transparent 70%);
+    --scrim: rgba(5, 8, 15, 0.45);
+    --g-ocean-a: #040a18;
+    --g-ocean-b: #13284c;
+    --g-rim: #3f7fb8;
+    --g-land: #c9d6f0;
+    --g-grid: #5d86c2;
+    --g-atmo: #4b9fe0;
+    --g-atmo-a: 0.9;
+    --g-cell: #f2c75c;
+    --g-cell-add: 1;
+    --g-pin-a: #ffd66b;
+    --g-pin-b: #f08a24;
+    --g-pin-fill: rgba(10, 18, 36, 0.85);
+    --g-land-lit: 1;
+    --sky-a: #e6ecff;
+    --sky-b: #ffd98a;
+    --sky-c: #8fb8ff;
+    --sky-alpha: 1;
+    --sky-add: 1;
+    --neb-1: #1f4796;
+    --neb-2: #4b2d85;
+    --neb-3: #0e6173;
+    --neb-alpha: 0.55;
+    --theme-colour: #050913;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="night"] {
+  --bg: #050913;
+  --bg-2: #0b1120;
+  --surface: #111726;
+  --surface-glass: rgba(12, 17, 30, 0.72);
+  --line: rgba(255, 255, 255, 0.07);
+  --line-strong: rgba(255, 255, 255, 0.14);
+  --ink: #eef1f8;
+  --ink-2: #aab4c8;
+  --ink-3: #7d89a3;
+  --gold: #e8c35e;
+  --gold-soft: #c9a13e;
+  --gold-wash: rgba(232, 195, 94, 0.1);
+  --presence: #6fd0f5;
+  --presence-glow: rgba(111, 208, 245, 0.45);
+  --warn: #f0b35a;
+  --danger: #e0706a;
+  --on-gold: #1a1405;
+  --shadow: 0 24px 60px -28px rgba(0, 0, 0, 0.8);
+  --glow: radial-gradient(ellipse 80% 60% at 50% 62%, rgba(30, 70, 130, 0.35), transparent 70%);
+  --scrim: rgba(5, 8, 15, 0.45);
+  --g-ocean-a: #040a18;
+  --g-ocean-b: #13284c;
+  --g-rim: #3f7fb8;
+  --g-land: #c9d6f0;
+  --g-grid: #5d86c2;
+  --g-atmo: #4b9fe0;
+  --g-atmo-a: 0.9;
+  --g-cell: #f2c75c;
+  --g-cell-add: 1;
+  --g-pin-a: #ffd66b;
+  --g-pin-b: #f08a24;
+  --g-pin-fill: rgba(10, 18, 36, 0.85);
+  --g-land-lit: 1;
+  --sky-a: #e6ecff;
+  --sky-b: #ffd98a;
+  --sky-c: #8fb8ff;
+  --sky-alpha: 1;
+  --sky-add: 1;
+  --neb-1: #1f4796;
+  --neb-2: #4b2d85;
+  --neb-3: #0e6173;
+  --neb-alpha: 0.55;
+  --theme-colour: #050913;
   color-scheme: dark;
 }
 
 @theme inline {
   --color-bg: var(--bg);
-  --color-bg-raised: var(--bg-raised);
-  --color-fg: var(--fg);
-  --color-muted: var(--muted);
-  --color-gold: var(--gold);
-  --color-gold-bright: var(--gold-bright);
+  --color-bg-2: var(--bg-2);
+  --color-surface: var(--surface);
+  --color-surface-glass: var(--surface-glass);
   --color-line: var(--line);
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-quran: var(--font-amiri-quran), "Amiri Quran", "Amiri", serif;
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-gold-wash: var(--gold-wash);
+  --color-presence: var(--presence);
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
+  --color-on-gold: var(--on-gold);
+  /* Older names, still used by the privacy page. */
+  --color-fg: var(--ink);
+  --color-muted: var(--ink-2);
+  --color-gold-bright: var(--gold);
+  --color-bg-raised: var(--surface);
+  --font-sans: var(--font-ui), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-quran: var(--font-amiri-quran), "Amiri Quran", "Amiri", "Geeza Pro", "Traditional Arabic", serif;
+  --font-title-ar: var(--font-amiri), "Amiri", var(--font-amiri-quran), "Geeza Pro", serif;
+  --font-tr: var(--font-cormorant), "Iowan Old Style", Georgia, serif;
 }
 
 html,
 body {
   background: var(--bg);
-  color: var(--fg);
+  color: var(--ink);
 }
 
 body {
   font-family: var(--font-sans);
+  transition:
+    background-color 0.6s ease,
+    color 0.6s ease;
 }
 
 /* A visible focus ring on everything reachable by keyboard. */
 :focus-visible {
   outline: 2px solid var(--gold);
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 
 @utility focus-ring {
   &:focus-visible {
     outline: 2px solid var(--gold);
-    outline-offset: 2px;
+    outline-offset: 3px;
   }
 }
 
+/* Frosted glass for the pill, the dock and the round buttons. */
+@utility glass {
+  background: var(--surface-glass);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
 ::selection {
-  background: rgba(212, 175, 107, 0.35);
+  background: var(--gold-wash);
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 var(--presence-glow);
+  }
+  50% {
+    box-shadow: 0 0 0 6px transparent;
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility animate-breathe {
+  animation: breathe 4s ease-in-out infinite;
+}
+
+@utility animate-blink {
+  animation: blink 1.6s ease-in-out infinite;
+}
+
+@utility animate-rise {
+  animation: rise 0.9s ease both;
+}
+
+@utility animate-sheet {
+  animation: rise 0.35s ease both;
 }
 
 @media (prefers-reduced-motion: reduce) {

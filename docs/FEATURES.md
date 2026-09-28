@@ -14,7 +14,7 @@ Legend: **MVP** = ships in the first release · **Later** = designed for, not bu
 | A4 | Progress through the current surah (bar + elapsed time) | MVP | 05 | Bar position equals `posInTrack / durationMs` |
 | A5 | Join button starts audio at the live position | MVP | 04, 05 | Two browsers joined 30 s apart agree within 250 ms (Playwright e2e) |
 | A6 | NTP-style clock sync over WebSocket | MVP | 03, 04 | Unit tests with simulated skew and asymmetric latency converge within 20 ms of RTT/2 |
-| A7 | Drift correction (rate nudge, seek on large error or stall) | MVP | 04 | Simulated drift of 500 ms converges below 40 ms without a seek |
+| A7 | Drift correction (rate nudge, seek on large error or stall) | MVP | 04 | Simulated drift of 500 ms converges below 40 ms without a seek; ±80 ms read jitter causes no rate changes |
 | A8 | Rate-nudge off switch (seek at ayah gaps only) | MVP | 04 | With `RATE_MAX=0`, `playbackRate` never leaves 1 |
 | A9 | Gapless-as-possible surah transitions (preload next track) | MVP | 04 | Next track element has `readyState ≥ 3` before the boundary in e2e |
 | A10 | Reconnect with jittered backoff; audio continues | MVP | 04 | Killing the API for 10 s does not stop audio; socket returns |

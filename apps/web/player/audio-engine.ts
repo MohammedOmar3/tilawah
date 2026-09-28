@@ -1,10 +1,12 @@
 import type { CompiledProgramme, Timings } from "@tilawah/contracts";
-import { decide, DEFAULT_RATE_MAX, HOLD_BELOW_MS, isInGap, nextGap } from "../lib/sync/drift";
+import { decide, DEFAULT_RATE_MAX, ENGAGE_ABOVE_MS, isInGap, median, nextGap, SEEK_ABOVE_MS } from "../lib/sync/drift";
 import type { ProgrammeClock, Target } from "../lib/sync/programme-clock";
 import { HAVE_FUTURE_DATA, type AudioLike, type TimerId, type Timers } from "../lib/sync/runtime";
 
 export const CORRECTION_EVERY_MS = 1000;
 export const PRELOAD_BEFORE_MS = 30_000;
+/** Corrections act on the median of this many recent error readings, so one noisy read changes nothing. */
+export const ERR_SAMPLES = 3;
 
 export interface EngineTick {
   trackIndex: number;
@@ -50,6 +52,8 @@ export class AudioEngine {
   /** Our own seek is in flight: buffering it causes is not a stall. */
   private seekPending = false;
   private reportedPlaying = false;
+  /** Recent raw error readings since the last seek or track change. */
+  private errSamples: number[] = [];
   private correction: TimerId | null = null;
   private boundaryTimer: TimerId | null = null;
   private gapTimer: TimerId | null = null;
@@ -148,6 +152,7 @@ export class AudioEngine {
     this.clearTimers();
     const track = this.o.compiled.programme.tracks[t.trackIndex]!;
     this.stalled = false;
+    this.errSamples = [];
     if (this.currentKey !== null && this.nextHolds === t.trackIndex) {
       const old = this.current;
       this.current = this.next;
@@ -184,6 +189,7 @@ export class AudioEngine {
   }
 
   private seek(t: Target): void {
+    this.errSamples = [];
     this.current.playbackRate = 1;
     this.seekPending = true;
     this.current.currentTime = (t.posInTrackMs + this.latencyMs) / 1000;
@@ -200,14 +206,20 @@ export class AudioEngine {
     }
     this.preload(t);
     const el = this.current;
-    const errMs = el.currentTime * 1000 - (t.posInTrackMs + this.latencyMs);
+    // A stall invalidates earlier readings: the element stood still meanwhile.
+    if (afterStall) this.errSamples = [];
+    const rawErrMs = el.currentTime * 1000 - (t.posInTrackMs + this.latencyMs);
+    this.errSamples.push(rawErrMs);
+    if (this.errSamples.length > ERR_SAMPLES) this.errSamples.shift();
+    // An error beyond the seek threshold is never noise (e.g. after the page slept): act on it now.
+    const errMs = Math.abs(rawErrMs) > SEEK_ABOVE_MS ? rawErrMs : median(this.errSamples);
     const timings = this.o.getTimings(t.trackIndex);
     const inGap = timings ? isInGap(timings.segments, t.posInTrackMs) : false;
-    const d = decide({ errMs, rateMax: this.rateMax, inGap, stalled: afterStall });
+    const d = decide({ errMs, rateMax: this.rateMax, inGap, stalled: afterStall, rate: el.playbackRate });
     this.clearTimers();
     if (d.kind === "seek") this.seek(t);
     else if (el.playbackRate !== d.rate) el.playbackRate = d.rate;
-    if (d.kind === "hold" && this.rateMax <= 0 && Math.abs(errMs) >= HOLD_BELOW_MS && timings) {
+    if (d.kind === "hold" && this.rateMax <= 0 && Math.abs(errMs) > ENGAGE_ABOVE_MS && timings) {
       this.scheduleGapCorrection(timings, t.posInTrackMs);
     }
     this.o.onTick?.({

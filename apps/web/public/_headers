@@ -10,6 +10,9 @@
 /data/text/*
   Cache-Control: public, max-age=86400
 
+/data/translations/*
+  Cache-Control: public, max-age=86400
+
 /data/timings/*
   Cache-Control: public, max-age=86400
 

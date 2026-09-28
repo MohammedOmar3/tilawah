@@ -5,6 +5,7 @@ import path from "node:path";
 import { TEXT_SOURCE, buildManifest } from "./lib/manifest";
 import { parseSurahMetadata } from "./lib/metadata";
 import { parseTanzilText } from "./lib/text";
+import { TRANSLATIONS, buildTranslation } from "./lib/translation";
 import { sourcesDir, webDataDir } from "./paths";
 
 const TOTAL_AYAHS = 6236;
@@ -53,6 +54,23 @@ async function main(): Promise<void> {
 
   const manifest = buildManifest(written);
   await writeFile(path.join(textDir, "manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
+
+  // Translations: translations/<id>/NNN.json with their own checksum manifest.
+  const translationsDir = path.join(webDataDir, "translations");
+  await rm(translationsDir, { recursive: true, force: true });
+  for (const t of TRANSLATIONS) {
+    const docs = buildTranslation(t, readFileSync(path.join(sourcesDir, t.file), "utf8"), surahs);
+    const dir = path.join(translationsDir, t.id);
+    await mkdir(dir, { recursive: true });
+    const files: Record<string, Buffer> = {};
+    for (const doc of docs) {
+      const name = `${pad3(doc.surah)}.json`;
+      files[name] = Buffer.from(JSON.stringify(doc), "utf8");
+      await writeFile(path.join(dir, name), files[name]);
+    }
+    await writeFile(path.join(dir, "manifest.json"), JSON.stringify(buildManifest(files, `tanzil-${t.id}`), null, 2) + "\n");
+    console.log(`wrote translations/${t.id}: ${docs.length} files`);
+  }
 
   console.log(`wrote surahs.json, ${Object.keys(written).length} text files and manifest.json (${total} ayahs)`);
 }

@@ -10,8 +10,8 @@ export interface ReadingBlockProps {
   /** 0 = the opening before ayah 1. */
   ayah: number;
   ayahs: readonly AyahLine[] | null;
-  /** The current ayah's translation, when one is configured and switched on. */
-  translation?: { text: string; source: string } | null;
+  /** The shown ayah's translation, when one is configured and switched on. */
+  translation?: { text: string; source: string; language: string } | null;
   /** The listener's text size (Settings). */
   textScale: number;
   ref?: Ref<HTMLElement>;
@@ -95,9 +95,9 @@ export default function ReadingBlock({ surah, ayah, ayahs, translation, textScal
           <>
             <p
               key={`tr-${ayah}`}
-              lang="en"
+              lang={translation.language}
               data-testid="translation"
-              className="m-0 max-w-[60ch] font-tr text-ink-2 italic [text-wrap:pretty] motion-safe:animate-rise"
+              className={`m-0 max-w-[60ch] font-tr text-ink-2 italic [text-wrap:pretty] motion-safe:animate-rise ${ayah === 0 ? "opacity-45" : ""}`}
               style={{
                 fontSize: "calc(clamp(1rem, 2.1vw, 1.15rem) * var(--ayah-scale, 1) * var(--fit, 1))",
                 lineHeight: 1.5,

@@ -13,10 +13,25 @@ export const Surah = z.object({
 });
 export const Surahs = z.array(Surah).length(114);
 
+const Ayahs = z.array(z.object({ n: z.number().int().positive(), text: z.string().min(1) })).min(1);
+
 export const SurahText = z.object({
   surah: SurahNumber,
   source: z.string().min(1),
-  ayahs: z.array(z.object({ n: z.number().int().positive(), text: z.string().min(1) })).min(1),
+  ayahs: Ayahs,
+});
+
+/** A translation of one surah, keyed by ayah number like the Arabic text. */
+export const SurahTranslation = z.object({
+  surah: SurahNumber,
+  /** Tanzil-style id: language code, a dot, the translation's slug ("en.pickthall"). */
+  id: z.string().regex(/^[a-z]{2,3}\.[a-z0-9-]+$/),
+  /** Shown under the translation ("Pickthall"). */
+  name: z.string().min(1),
+  /** BCP 47 language tag, for the lang attribute ("en"). */
+  language: z.string().min(2),
+  source: z.string().min(1),
+  ayahs: Ayahs,
 });
 
 export const TimingSegment = z
@@ -80,6 +95,7 @@ export const Presence = z.object({
 
 export type Surah = z.infer<typeof Surah>;
 export type SurahText = z.infer<typeof SurahText>;
+export type SurahTranslation = z.infer<typeof SurahTranslation>;
 export type TimingSegment = z.infer<typeof TimingSegment>;
 export type Timings = z.infer<typeof Timings>;
 export type Track = z.infer<typeof Track>;

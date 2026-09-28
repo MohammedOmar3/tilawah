@@ -36,7 +36,7 @@ The review left five decisions open. The plans use the review's recommended defa
 |---|---|---|---|
 | D1 | What plays | A continuous khatm (surah 1 to 114, looping) with one reciter | `programme.json` |
 | D2 | Which reciter, and rights | Unresolved. Development uses a generated test tone; production audio is ingested at the end (plan 08) once written permission exists | `programme.json`, plan 08 |
-| D3 | Translation in MVP | No translation in MVP. The text component has a slot for one, behind `NEXT_PUBLIC_TRANSLATION_ID` (empty = off) | web config |
+| D3 | Translation | Phase 2: one English translation under the ayah, Pickthall (1930, public domain) from Tanzil. Listeners can switch it off; `NEXT_PUBLIC_TRANSLATION_ID` picks it (default `en.pickthall`, `off` = none) | web config, `translations/` |
 | D4 | Globe visibility default | Visible by default, with a prominent "Listen anonymously" toggle on the Join screen; k ≥ 5 threshold protects sparse areas | web UI, API `K_MIN` |
 | D5 | Postgres and Redis | Deferred. Static JSON plus in-memory presence on one Go instance | architecture |
 
@@ -114,6 +114,14 @@ All shapes below are normative. `packages/contracts/fixtures/` holds example fil
   "ayahs": [ { "n": 1, "text": "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ" } ] }
 ```
 `text/manifest.json` = `{ "source": "...", "files": { "001.json": "<sha256>" , ... } }`. CI fails if any hash changes without the manifest changing in the same commit.
+
+### 4.2a `translations/<id>/NNN.json` (served at `/data/translations/en.pickthall/001.json` …)
+
+```json
+{ "surah": 1, "id": "en.pickthall", "name": "Pickthall", "language": "en", "source": "tanzil",
+  "ayahs": [ { "n": 1, "text": "In the name of Allah, the Beneficent, the Merciful." } ] }
+```
+Generated from `data/sources/tanzil/<id>.txt`, verbatim, one entry per ayah, checked against `surahs.json`. Each translation directory has its own `manifest.json` like `text/`, under the same checksum guard.
 
 ### 4.3 Timings `timings/<reciterId>/NNN.json`
 

@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { readConfig } from "./config";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { getTranslationId, readConfig } from "./config";
 
 const base = {
   NEXT_PUBLIC_API_URL: "http://localhost:8080",
@@ -13,7 +13,7 @@ describe("readConfig", () => {
       wsUrl: "ws://localhost:8080/v1/ws",
       programmeUrl: "/data/programme.json",
       rateNudgeMax: 0.02,
-      translationId: "",
+      translationId: "en.pickthall",
       presencePollMs: 15000,
       e2e: false,
     });
@@ -23,6 +23,15 @@ describe("readConfig", () => {
     const c = readConfig({ ...base, NEXT_PUBLIC_PROGRAMME_URL: "", NEXT_PUBLIC_RATE_NUDGE_MAX: "" });
     expect(c.programmeUrl).toBe("/data/programme.json");
     expect(c.rateNudgeMax).toBe(0.02);
+  });
+
+  it("shows Pickthall by default and no translation when set to off", () => {
+    expect(readConfig({ ...base, NEXT_PUBLIC_TRANSLATION_ID: "" }).translationId).toBe("en.pickthall");
+    expect(readConfig({ ...base, NEXT_PUBLIC_TRANSLATION_ID: "off" }).translationId).toBe("");
+  });
+
+  it("rejects a translation id that is not a Tanzil-style id", () => {
+    expect(() => readConfig({ ...base, NEXT_PUBLIC_TRANSLATION_ID: "../x" })).toThrow(/NEXT_PUBLIC_TRANSLATION_ID/);
   });
 
   it("strips a trailing slash from the API URL", () => {
@@ -58,5 +67,17 @@ describe("readConfig", () => {
     ["NEXT_PUBLIC_E2E", { NEXT_PUBLIC_E2E: "yes" }],
   ])("rejects a bad %s", (name, override) => {
     expect(() => readConfig({ ...base, ...override })).toThrow(name);
+  });
+});
+
+describe("getTranslationId", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("works without the API URLs, so the page can prerender", () => {
+    vi.stubEnv("NEXT_PUBLIC_API_URL", "");
+    vi.stubEnv("NEXT_PUBLIC_TRANSLATION_ID", "");
+    expect(getTranslationId()).toBe("en.pickthall");
+    vi.stubEnv("NEXT_PUBLIC_TRANSLATION_ID", "off");
+    expect(getTranslationId()).toBe("");
   });
 });

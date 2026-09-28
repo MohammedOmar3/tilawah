@@ -16,6 +16,7 @@ const surahs = Array.from({ length: 114 }, (_, i) => ({
   revelation: "meccan",
 }));
 const text = { surah: 18, source: "tanzil-uthmani-hafs", ayahs: [{ n: 1, text: "ٱلْحَمْدُ" }] };
+const translation = { surah: 18, id: "en.pickthall", name: "Pickthall", language: "en", source: "tanzil", ayahs: [{ n: 1, text: "Praise be to Allah" }] };
 const timings = { surah: 1, reciter: "dev-tone", segments: [{ ayah: 0, startMs: 0, endMs: 1000 }] };
 
 function respond(routes: Record<string, unknown>) {
@@ -38,6 +39,7 @@ describe("loaders", () => {
       "/data/timings/dev-tone/001.json": timings,
       "/bad.json": { version: "" },
       "/data/text/002.json": { surah: 2 },
+      "/data/translations/en.pickthall/018.json": translation,
     });
     loaders = createLoaders(fetchFn as unknown as typeof fetch);
   });
@@ -58,6 +60,13 @@ describe("loaders", () => {
     await loaders.loadSurahText(18);
     expect(fetchFn).toHaveBeenCalledTimes(1);
     expect(fetchFn).toHaveBeenCalledWith("/data/text/018.json");
+  });
+
+  it("loads a surah's translation from its id's directory and caches it", async () => {
+    await expect(loaders.loadTranslation("en.pickthall", 18)).resolves.toEqual(translation);
+    await loaders.loadTranslation("en.pickthall", 18);
+    expect(fetchFn).toHaveBeenCalledTimes(1);
+    expect(fetchFn).toHaveBeenCalledWith("/data/translations/en.pickthall/018.json");
   });
 
   it("caches timings by URL", async () => {

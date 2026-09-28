@@ -1,10 +1,16 @@
-import { Programme, Surahs, SurahText, Timings } from "@tilawah/contracts";
+import { Programme, Surahs, SurahText, SurahTranslation, Timings } from "@tilawah/contracts";
 import type { z } from "zod";
 
 type Fetch = (url: string) => Promise<Response>;
 
+const pad3 = (n: number) => String(n).padStart(3, "0");
+
 export function surahTextUrl(surah: number): string {
-  return `/data/text/${String(surah).padStart(3, "0")}.json`;
+  return `/data/text/${pad3(surah)}.json`;
+}
+
+export function translationUrl(id: string, surah: number): string {
+  return `/data/translations/${id}/${pad3(surah)}.json`;
 }
 
 async function fetchJson<T extends z.ZodType>(fetchFn: Fetch, url: string, schema: T): Promise<z.infer<T>> {
@@ -25,6 +31,7 @@ export interface Loaders {
   loadProgramme(url: string): Promise<Programme>;
   loadSurahs(): Promise<Surahs>;
   loadSurahText(surah: number): Promise<SurahText>;
+  loadTranslation(id: string, surah: number): Promise<SurahTranslation>;
   loadTimings(url: string): Promise<Timings>;
 }
 
@@ -48,9 +55,13 @@ export function createLoaders(fetchFn: Fetch = (url) => globalThis.fetch(url)): 
       const url = surahTextUrl(surah);
       return cached(url, () => fetchJson(fetchFn, url, SurahText));
     },
+    loadTranslation: (id, surah) => {
+      const url = translationUrl(id, surah);
+      return cached(url, () => fetchJson(fetchFn, url, SurahTranslation));
+    },
     loadTimings: (url) => cached(url, () => fetchJson(fetchFn, url, Timings)),
   };
 }
 
 const defaultLoaders = createLoaders();
-export const { loadProgramme, loadSurahs, loadSurahText, loadTimings } = defaultLoaders;
+export const { loadProgramme, loadSurahs, loadSurahText, loadTranslation, loadTimings } = defaultLoaders;

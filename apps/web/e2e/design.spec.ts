@@ -52,3 +52,25 @@ test("About shows the details of the recitation", async ({ page }) => {
   await about.getByRole("button", { name: "Close" }).click();
   await expect(about).toBeHidden();
 });
+
+test("the translation shows under the ayah and the globe grows when it is switched off", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openHome(page);
+  await join(page, 15_000);
+  const translation = page.getByTestId("translation");
+  await expect(translation).not.toBeEmpty();
+  await expect(translation).toHaveAttribute("lang", "en");
+  const reading = page.getByRole("region", { name: "Current ayah" });
+  const withTranslation = (await reading.boundingBox())!.height;
+
+  const toggle = page.getByRole("button", { name: "Translation" });
+  await expect(toggle).toHaveAttribute("aria-pressed", "true");
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-pressed", "false");
+  await expect(translation).toBeHidden();
+  expect((await reading.boundingBox())!.height).toBeLessThan(withTranslation);
+
+  // Remembered, and mirrored in Settings.
+  await page.getByRole("button", { name: "Settings" }).click();
+  await expect(page.getByRole("switch", { name: "English translation" })).toHaveAttribute("aria-checked", "false");
+});

@@ -1,10 +1,10 @@
 "use client";
 
-import { compileProgramme, type Programme, type Surah, type SurahText } from "@tilawah/contracts";
+import { compileProgramme, type Programme, type Surah, type SurahText, type SurahTranslation } from "@tilawah/contracts";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { type GlobeFrame, LazyGlobe } from "@/globe";
-import { getConfig } from "@/lib/config";
-import { loadProgramme, loadSurahs, loadSurahText } from "@/lib/data/loaders";
+import { getConfig, getTranslationId } from "@/lib/config";
+import { loadProgramme, loadSurahs, loadSurahText, loadTranslation } from "@/lib/data/loaders";
 import { createPresencePoller, usePresenceStore } from "@/lib/data/presence";
 import { riwayahName } from "@/lib/format";
 import { joinFrame, listeningFrame } from "@/lib/layout";
@@ -34,6 +34,7 @@ export default function Home() {
   const [programme, setProgramme] = useState<Programme | null>(null);
   const [surahs, setSurahs] = useState<Surah[] | null>(null);
   const [text, setText] = useState<SurahText | null>(null);
+  const [translationDoc, setTranslationDoc] = useState<SurahTranslation | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [sheet, setSheet] = useState<"settings" | "about" | null>(null);
 
@@ -48,6 +49,7 @@ export default function Home() {
   const { theme, dark } = useTheme();
   const textScale = useSettingsStore((s) => s.textScale);
   const announce = useSettingsStore((s) => s.announce);
+  const translationOn = useSettingsStore((s) => s.translation);
   const updateSettings = useSettingsStore((s) => s.update);
   const save = (patch: Parameters<typeof updateSettings>[0]) => updateSettings(patch, browserStorage());
 
@@ -99,8 +101,37 @@ export default function Home() {
     if (nextSurah !== null) loadSurahText(nextSurah).catch(() => undefined);
   }, [nextSurah]);
 
+  // The translation follows the text: fetched only while it is switched on.
+  const translationId = getTranslationId();
+  const wantTranslation = translationId !== "" && translationOn;
+  useEffect(() => {
+    if (!wantTranslation || surahNumber === null) return;
+    let live = true;
+    loadTranslation(translationId, surahNumber)
+      .then((t) => live && setTranslationDoc(t))
+      .catch((err: unknown) => console.error(err));
+    return () => {
+      live = false;
+    };
+  }, [wantTranslation, translationId, surahNumber]);
+  useEffect(() => {
+    if (wantTranslation && nextSurah !== null) loadTranslation(translationId, nextSurah).catch(() => undefined);
+  }, [wantTranslation, translationId, nextSurah]);
+
   const inSession = status !== "idle" && status !== "error";
   const ayahs = text && text.surah === surahNumber ? text.ayahs : null;
+  // At the opening (ayah 0) the first ayah waits dimmed, and so does its translation.
+  const shownAyah = Math.max(1, np?.ayah ?? 0);
+  const translationLine =
+    wantTranslation && translationDoc && translationDoc.surah === surahNumber
+      ? translationDoc.ayahs.find((a) => a.n === shownAyah)
+      : undefined;
+  const translation =
+    translationLine && translationDoc
+      ? { text: translationLine.text, source: `${translationDoc.name} translation`, language: translationDoc.language }
+      : null;
+  const translationToggle =
+    translationId !== "" ? { on: translationOn, onChange: (on: boolean) => save({ translation: on }) } : null;
   const now: NowInfo | null = np
     ? {
         surah: np.surah,
@@ -158,7 +189,14 @@ export default function Home() {
 
       {inSession ? (
         <>
-          <ReadingBlock ref={readingRef} surah={np?.surah ?? null} ayah={np?.ayah ?? 0} ayahs={ayahs} textScale={textScale} />
+          <ReadingBlock
+            ref={readingRef}
+            surah={np?.surah ?? null}
+            ayah={np?.ayah ?? 0}
+            ayahs={ayahs}
+            translation={translation}
+            textScale={textScale}
+          />
           <Dock
             ref={dockRef}
             status={status}
@@ -169,7 +207,7 @@ export default function Home() {
             durationMs={np?.track.durationMs ?? 0}
             onLeave={listening.leave}
             onAbout={() => setSheet("about")}
-            translation={null}
+            translation={translationToggle}
           />
           <AyahAnnouncer enabled={announce} surahName={np?.surah?.nameTransliterated ?? ""} ayah={np?.ayah ?? 0} />
         </>
@@ -197,14 +235,19 @@ export default function Home() {
         onTheme={(t) => save({ theme: t })}
         textScale={textScale}
         onTextScale={(s) => save({ textScale: s })}
-        translation={null}
+        translation={translationToggle}
         announce={announce}
         onAnnounce={(a) => save({ announce: a })}
         anon={anon}
         onAnon={setAnon}
         listening={inSession}
       />
-      <AboutSheet open={sheet === "about"} onClose={() => setSheet(null)} now={now} />
+      <AboutSheet
+        open={sheet === "about"}
+        onClose={() => setSheet(null)}
+        now={now}
+        translationName={translationId !== "" ? (translationDoc?.name ?? null) : null}
+      />
     </div>
   );
 }

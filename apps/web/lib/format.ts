@@ -18,3 +18,20 @@ const ARABIC_INDIC = "٠١٢٣٤٥٦٧٨٩";
 export function toArabicDigits(n: number): string {
   return String(n).replace(/[0-9]/g, (d) => ARABIC_INDIC[Number(d)]!);
 }
+
+/** "in under a minute", "in 29 min", "in 1 h 5 min": when the next surah starts. */
+export function formatUntil(ms: number): string {
+  const min = Math.floor(Math.max(0, ms) / 60_000);
+  if (min < 1) return "in under a minute";
+  if (min < 60) return `in ${min} min`;
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  return m === 0 ? `in ${h} h` : `in ${h} h ${m} min`;
+}
+
+const RIWAYAH: Record<string, string> = { hafs: "Hafs 'an 'Asim", warsh: "Warsh 'an Nafi'" };
+
+/** The programme's riwayah id as listeners know it ("hafs" → "Hafs 'an 'Asim"). */
+export function riwayahName(id: string): string {
+  return RIWAYAH[id.toLowerCase()] ?? id.charAt(0).toUpperCase() + id.slice(1);
+}

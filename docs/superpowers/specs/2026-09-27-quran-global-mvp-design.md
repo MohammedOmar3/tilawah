@@ -43,12 +43,12 @@ The review left five decisions open. The plans use the review's recommended defa
 Further assumptions made while planning:
 
 - **"superman" means the Superpowers plugin for Claude Code** (obra/superpowers). The plans follow its `writing-plans` format so they can be run with `superpowers:subagent-driven-development` (one fresh subagent per task, reviewed between tasks) or `superpowers:executing-plans`.
-- **Grid cells instead of H3.** The server snaps locations to a plain latitude/longitude grid (`GRID_DEG`, default 3°, about 330 km), which is pure Go with no cgo. The globe draws those cells as hexbins client-side. H3 can replace the grid later behind the same interface.
+- **Grid cells instead of H3.** The server snaps locations to a plain latitude/longitude grid (`GRID_DEG`, default 3°, about 330 km), which is pure Go with no cgo. The globe draws each cell as a crescent map pin over a soft glow, sized by count. H3 can replace the grid later behind the same interface.
 - **Location comes from Cloudflare headers**, not a GeoIP database. The API sits behind Cloudflare's proxy, which adds `cf-ipcountry` and (with the free "Add visitor location headers" managed transform) `cf-iplatitude`/`cf-iplongitude`. The API snaps them to a grid cell and discards them. If the lat/lng headers are missing it falls back to the country centroid.
 - **Audio format:** one file per surah, AAC-LC in `.m4a`, 64 kbps mono, `+faststart`. The iPhone lock-screen and surah-transition behaviour is checked on a real device at the end (manual step M-E6), with `/lab/audio` built as a diagnostic page for it.
 - **Drift correction uses a small playback-rate nudge (max ±2%).** Because altering recitation speed may be sensitive, `NEXT_PUBLIC_RATE_NUDGE_MAX=0` turns it off and the player then corrects only by seeking in the gap between ayat.
 - **Text source:** Tanzil Uthmani (Hafs), unmodified, with attribution, checksummed in CI.
-- **Globe land shapes:** Natural Earth 110m countries (public domain), drawn as hex-dotted land. No large Earth texture.
+- **Globe land shapes:** Natural Earth 110m countries (public domain), drawn as an even grid of dots on land (generated at build time). No large Earth texture.
 - **No cookies, no accounts, no analytics SDKs.** A privacy notice page is enough for MVP (legal confirmation is a launch step).
 
 ---
@@ -183,9 +183,9 @@ Server rules: no reply to `hb`, `state` or `stat`. Idle timeout 120 s without an
 ## 5. Client behaviour
 
 ### 5.1 Join flow
-1. Page loads static data (`programme.json`, `surahs.json`) and shows the current surah and ayah immediately using the local clock (approximate, labelled "Live").
+1. Page loads static data (`programme.json`, `surahs.json`) and shows the current surah and ayah immediately using the local clock (approximate, labelled "Now reciting").
 2. It fetches `presence.json` and shows the counts. The globe chunk lazy-loads after first paint.
-3. The user presses **Join global listening** (required for autoplay). The toggle "Listen anonymously" sits beside it.
+3. The user presses **Join the recitation** (required for autoplay). The toggle "Listen anonymously" sits beside it.
 4. Open WS, send `hello`, run an 8-ping clock-sync burst (100 ms apart; keep the lowest-RTT sample).
 5. Compute the target position, set `audio.src`, seek, `play()`.
 6. On `playing`, send `state{playing:true}`. The listener now counts.

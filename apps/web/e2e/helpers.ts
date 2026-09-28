@@ -37,7 +37,7 @@ export function heardTime(page: Page): Promise<number | null> {
 export async function openHome(page: Page): Promise<void> {
   await page.goto("/");
   await expect(page.getByTestId("surah-name")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Join global listening" })).toBeEnabled();
+  await expect(page.getByRole("button", { name: "Join the recitation" })).toBeEnabled();
   await page.waitForFunction(() => window.__tilawah !== undefined);
 }
 
@@ -51,8 +51,8 @@ export async function waitForGlobe(page: Page): Promise<void> {
 }
 
 export async function join(page: Page, timeout = 5000): Promise<void> {
-  await page.getByRole("button", { name: "Join global listening" }).click();
-  await expect(page.getByRole("status")).toHaveText("Listening", { timeout });
+  await page.getByRole("button", { name: "Join the recitation" }).click();
+  await expect(page.getByRole("status")).toHaveText("In sync", { timeout });
 }
 
 export function listenersShown(page: Page): Promise<number> {

@@ -28,7 +28,7 @@ export default function AyahText({ ayahs, current }: AyahTextProps) {
       lang="ar"
       dir="rtl"
       aria-current={isCurrent ? "true" : undefined}
-      className={`m-0 max-w-[34ch] font-quran text-ink [text-wrap:balance] motion-safe:animate-rise ${isCurrent ? "" : "opacity-45"}`}
+      className={`m-0 max-w-[42ch] font-quran text-ink [text-wrap:balance] motion-safe:animate-rise ${isCurrent ? "" : "opacity-45"}`}
       style={{ fontSize: "calc(clamp(1.3rem, 3.6vw, 1.95rem) * var(--ayah-scale, 1) * var(--fit, 1))", lineHeight: 1.95 }}
     >
       {shown.text} <span className="whitespace-nowrap text-[0.8em] text-gold">{`﴿${toArabicDigits(shown.n)}﴾`}</span>

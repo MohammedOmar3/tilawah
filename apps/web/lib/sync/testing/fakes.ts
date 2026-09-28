@@ -283,6 +283,8 @@ export interface FakeAudioOptions {
   autoPlaying?: boolean;
   /** Fire `seeked` synchronously on every seek (default true). */
   autoSeeked?: boolean;
+  /** After each seek, hold the playhead still this long without firing `waiting` (iOS Safari refetching). */
+  seekFreezeMs?: number;
 }
 
 export class FakeAudio implements AudioLike {
@@ -305,6 +307,7 @@ export class FakeAudio implements AudioLike {
   private listeners = new Map<string, Set<() => void>>();
   private readonly opts: FakeAudioOptions;
   private readyTimer: TimerId | null = null;
+  private frozenMs = 0;
 
   constructor(opts: FakeAudioOptions = {}) {
     this.opts = opts;
@@ -337,6 +340,7 @@ export class FakeAudio implements AudioLike {
     this.currentTimeValue = v;
     this.seeks.push(v);
     if (this.opts.time) this.seekTimes.push(this.opts.time.now());
+    this.frozenMs = this.opts.seekFreezeMs ?? 0;
     if (this.opts.autoSeeked ?? true) this.dispatch("seeked");
   }
 
@@ -391,6 +395,11 @@ export class FakeAudio implements AudioLike {
   /** Advance the playhead by dtMs × playbackRate while actually playing. */
   tick(dtMs: number): void {
     if (this.paused || this.stalled || this.readyState < 3) return;
+    if (this.frozenMs > 0) {
+      const frozen = Math.min(dtMs, this.frozenMs);
+      this.frozenMs -= frozen;
+      dtMs -= frozen;
+    }
     this.currentTimeValue += (dtMs * this.playbackRate) / 1000;
   }
 

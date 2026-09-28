@@ -7,6 +7,10 @@ export const CORRECTION_EVERY_MS = 1000;
 export const PRELOAD_BEFORE_MS = 30_000;
 /** Corrections act on the median of this many recent error readings, so one noisy read changes nothing. */
 export const ERR_SAMPLES = 3;
+/** After a seek, wait up to this many ticks for the playhead to move before measuring again. */
+export const SEEK_SETTLE_TICKS = 5;
+/** Upper bound for the learned seek lead. */
+export const MAX_SEEK_LEAD_MS = 3000;
 
 export interface EngineTick {
   trackIndex: number;
@@ -54,6 +58,15 @@ export class AudioEngine {
   private reportedPlaying = false;
   /** Recent raw error readings since the last seek or track change. */
   private errSamples: number[] = [];
+  /**
+   * How long the element stands still after a seek before playing on (iOS
+   * Safari: over a second, without a `waiting` event). Seeks aim this far
+   * ahead so they land on time instead of seeking again and again.
+   */
+  private seekLeadMs = 0;
+  /** Position of the last seek, in seconds, until the playhead has moved past it. */
+  private seekFrom: number | null = null;
+  private settleTicks = 0;
   private correction: TimerId | null = null;
   private boundaryTimer: TimerId | null = null;
   private gapTimer: TimerId | null = null;
@@ -192,7 +205,10 @@ export class AudioEngine {
     this.errSamples = [];
     this.current.playbackRate = 1;
     this.seekPending = true;
-    this.current.currentTime = (t.posInTrackMs + this.latencyMs) / 1000;
+    const to = (t.posInTrackMs + this.latencyMs + this.seekLeadMs) / 1000;
+    this.seekFrom = to;
+    this.settleTicks = 0;
+    this.current.currentTime = to;
   }
 
   private tick(afterStall = false): void {
@@ -206,9 +222,18 @@ export class AudioEngine {
     }
     this.preload(t);
     const el = this.current;
+    // Until the playhead moves after a seek, any reading only measures how long the seek is taking.
+    let settledSeek = false;
+    if (this.seekFrom !== null) {
+      if (el.currentTime <= this.seekFrom + 0.02 && this.settleTicks++ < SEEK_SETTLE_TICKS) return;
+      settledSeek = el.currentTime > this.seekFrom + 0.02;
+      this.seekFrom = null;
+    }
     // A stall invalidates earlier readings: the element stood still meanwhile.
     if (afterStall) this.errSamples = [];
     const rawErrMs = el.currentTime * 1000 - (t.posInTrackMs + this.latencyMs);
+    // The first reading after a seek shows how far off the lead was: err = lead − actual resume delay.
+    if (settledSeek) this.seekLeadMs = Math.min(MAX_SEEK_LEAD_MS, Math.max(0, this.seekLeadMs - rawErrMs));
     this.errSamples.push(rawErrMs);
     if (this.errSamples.length > ERR_SAMPLES) this.errSamples.shift();
     // An error beyond the seek threshold is never noise (e.g. after the page slept): act on it now.

@@ -25,6 +25,7 @@ interface SetupOptions {
   autoReadyMs?: number | null;
   autoPlaying?: boolean;
   autoSeeked?: boolean;
+  seekFreezeMs?: number;
   long?: boolean;
 }
 
@@ -47,6 +48,7 @@ function setup(o: SetupOptions) {
     createAudio: () => {
       const a = new FakeAudio({ time, autoReadyMs: o.autoReadyMs ?? null, autoPlaying: o.autoPlaying ?? false,
         autoSeeked: o.autoSeeked ?? true,
+        seekFreezeMs: o.seekFreezeMs,
       });
       audios.push(a);
       return a;
@@ -143,6 +145,15 @@ describe("AudioEngine", () => {
     expect(a.seeks).toHaveLength(1);
     expect(Math.max(...a.rateHistory)).toBeCloseTo(1.02, 10);
     expect(Math.abs(lastErr(c))).toBeLessThan(40);
+  });
+
+  it("does not loop on seeks when the element takes over a second to resume after each seek", () => {
+    // iOS Safari: after a seek the playhead stands still ~1.4 s with no `waiting` event.
+    const c = started({ startOffsetMs: 5_000, long: true, seekFreezeMs: 1400 });
+    const a = c.current();
+    for (let i = 0; i < 60; i++) c.time.advance(1000);
+    expect(a.seeks.length).toBeLessThanOrEqual(2);
+    expect(Math.abs(lastErr(c))).toBeLessThan(100);
   });
 
   it("keeps the element ahead of the target by the output latency", () => {

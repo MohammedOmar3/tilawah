@@ -114,6 +114,37 @@ describe("AudioEngine", () => {
     expect(Math.max(...a.rateHistory)).toBeCloseTo(1.02, 10);
   });
 
+  it("does not keep changing the rate when currentTime reads are noisy", () => {
+    const c = started({ startOffsetMs: 5_000, long: true });
+    const a = c.current();
+    // Some browsers report currentTime tens of ms off; model ±80 ms of jitter.
+    const jitter = [0.06, -0.07, 0.08, -0.05, 0.03];
+    let n = 0;
+    Object.defineProperty(a, "currentTime", {
+      get: () => a.currentTimeValue + jitter[n++ % jitter.length]!,
+      set: (v: number) => {
+        a.currentTimeValue = v;
+      },
+    });
+    const before = a.rateHistory.length;
+    for (let i = 0; i < 60; i++) c.time.advance(1000);
+    expect(a.rateHistory.length - before).toBe(0);
+    expect(a.seeks).toHaveLength(1);
+  });
+
+  it("recovers a short stall with the rate instead of a seek", () => {
+    const c = started({ startOffsetMs: 5_000, long: true });
+    const a = c.current();
+    c.time.advance(3000);
+    a.dispatch("waiting");
+    c.time.advance(200);
+    a.dispatch("playing");
+    for (let i = 0; i < 30; i++) c.time.advance(1000);
+    expect(a.seeks).toHaveLength(1);
+    expect(Math.max(...a.rateHistory)).toBeCloseTo(1.02, 10);
+    expect(Math.abs(lastErr(c))).toBeLessThan(40);
+  });
+
   it("keeps the element ahead of the target by the output latency", () => {
     const c = started({ startOffsetMs: 5_000, outputLatencyMs: 100, long: true });
     for (let i = 0; i < 10; i++) c.time.advance(1000);

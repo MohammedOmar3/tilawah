@@ -202,7 +202,7 @@ describe("createListeningSession", () => {
 
   it("sends one stat a minute with rtt, offset and the mean |err|", async () => {
     const c = await joined({ skewMs: -3000 });
-    c.current().currentTimeValue += 0.2;
+    c.current().currentTimeValue += 0.3;
     c.time.advance(60_000);
     const stats = c.server.of("stat");
     expect(stats).toHaveLength(1);

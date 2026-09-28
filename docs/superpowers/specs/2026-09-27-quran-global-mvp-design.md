@@ -207,6 +207,8 @@ Server rules: no reply to `hb`, `state` or `stat`. Idle timeout 120 s without an
 | > 100 ms | `playbackRate = 1 ∓ RATE_MAX` (slower when ahead), held until `err` is back within 20 ms or changes sign, then `1`; if `RATE_MAX = 0`, seek at the next ayah gap instead |
 | > 1000 ms (acted on from a single reading), or > 250 ms after a stall (`waiting` → `playing`) | hard seek to target |
 
+After a seek, no correction runs until the playhead has moved (at most 5 ticks): iOS Safari holds still for over a second after each seek without firing `waiting`, and measuring during that time caused a seek every 2 s. The first reading after a seek gives the element's resume delay; later seeks aim that far ahead (the seek lead, 0 to 3 s) so they land on time.
+
 At a track boundary the player swaps `src` to the next track (preloaded 30 s ahead in a second `<audio>` element) and seeks to the computed position.
 
 ### 5.4 Reconnect and backgrounding

@@ -13,7 +13,7 @@ describe("readConfig", () => {
       wsUrl: "ws://localhost:8080/v1/ws",
       programmeUrl: "/data/programme.json",
       rateNudgeMax: 0.02,
-      translationId: "",
+      translationId: "en.pickthall",
       presencePollMs: 15000,
       e2e: false,
     });
@@ -23,6 +23,15 @@ describe("readConfig", () => {
     const c = readConfig({ ...base, NEXT_PUBLIC_PROGRAMME_URL: "", NEXT_PUBLIC_RATE_NUDGE_MAX: "" });
     expect(c.programmeUrl).toBe("/data/programme.json");
     expect(c.rateNudgeMax).toBe(0.02);
+  });
+
+  it("shows Pickthall by default and no translation when set to off", () => {
+    expect(readConfig({ ...base, NEXT_PUBLIC_TRANSLATION_ID: "" }).translationId).toBe("en.pickthall");
+    expect(readConfig({ ...base, NEXT_PUBLIC_TRANSLATION_ID: "off" }).translationId).toBe("");
+  });
+
+  it("rejects a translation id that is not a Tanzil-style id", () => {
+    expect(() => readConfig({ ...base, NEXT_PUBLIC_TRANSLATION_ID: "../x" })).toThrow(/NEXT_PUBLIC_TRANSLATION_ID/);
   });
 
   it("strips a trailing slash from the API URL", () => {

@@ -8,12 +8,14 @@ export interface AboutSheetProps {
   open: boolean;
   onClose: () => void;
   now: NowInfo | null;
+  /** The translation's name, when one is shown. */
+  translationName?: string | null;
 }
 
 const REVELATION = { meccan: "Meccan", medinan: "Medinan" } as const;
 
 /** About this recitation: the surah, the reciter, the text, and how the shared recitation works. */
-export default function AboutSheet({ open, onClose, now }: AboutSheetProps) {
+export default function AboutSheet({ open, onClose, now, translationName }: AboutSheetProps) {
   const surah = now?.surah;
   return (
     <Sheet
@@ -45,6 +47,12 @@ export default function AboutSheet({ open, onClose, now }: AboutSheetProps) {
             </a>
             )
           </dd>
+          {translationName && (
+            <>
+              <dt className="text-ink-3">Translation</dt>
+              <dd className="m-0">{translationName}, via Tanzil</dd>
+            </>
+          )}
           {now?.next && (
             <>
               <dt className="text-ink-3">Up next</dt>

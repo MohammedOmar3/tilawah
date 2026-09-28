@@ -9,7 +9,13 @@ const EnvSchema = z.object({
   NEXT_PUBLIC_WS_URL: z.url({ protocol: /^wss?$/ }),
   NEXT_PUBLIC_PROGRAMME_URL: optional(z.string().min(1).default("/data/programme.json")),
   NEXT_PUBLIC_RATE_NUDGE_MAX: optional(z.coerce.number().min(0).max(0.05).default(0.02)),
-  NEXT_PUBLIC_TRANSLATION_ID: optional(z.string().default("")),
+  // A Tanzil-style id under /data/translations, or "off" for none.
+  NEXT_PUBLIC_TRANSLATION_ID: optional(
+    z
+      .union([z.literal("off"), z.string().regex(/^[a-z]{2,3}\.[a-z0-9-]+$/)])
+      .default("en.pickthall")
+      .transform((v) => (v === "off" ? "" : v)),
+  ),
   NEXT_PUBLIC_PRESENCE_POLL_MS: optional(z.coerce.number().int().min(1000).default(15000)),
   NEXT_PUBLIC_E2E: optional(
     z
@@ -26,6 +32,7 @@ export interface Config {
   wsUrl: string;
   programmeUrl: string;
   rateNudgeMax: number;
+  /** The translation shown under each ayah; empty = none. */
   translationId: string;
   presencePollMs: number;
   e2e: boolean;

@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { readConfig } from "./config";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { getTranslationId, readConfig } from "./config";
 
 const base = {
   NEXT_PUBLIC_API_URL: "http://localhost:8080",
@@ -67,5 +67,17 @@ describe("readConfig", () => {
     ["NEXT_PUBLIC_E2E", { NEXT_PUBLIC_E2E: "yes" }],
   ])("rejects a bad %s", (name, override) => {
     expect(() => readConfig({ ...base, ...override })).toThrow(name);
+  });
+});
+
+describe("getTranslationId", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("works without the API URLs, so the page can prerender", () => {
+    vi.stubEnv("NEXT_PUBLIC_API_URL", "");
+    vi.stubEnv("NEXT_PUBLIC_TRANSLATION_ID", "");
+    expect(getTranslationId()).toBe("en.pickthall");
+    vi.stubEnv("NEXT_PUBLIC_TRANSLATION_ID", "off");
+    expect(getTranslationId()).toBe("");
   });
 });

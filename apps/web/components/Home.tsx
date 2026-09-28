@@ -3,7 +3,7 @@
 import { compileProgramme, type Programme, type Surah, type SurahText, type SurahTranslation } from "@tilawah/contracts";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { type GlobeFrame, LazyGlobe } from "@/globe";
-import { getConfig } from "@/lib/config";
+import { getConfig, getTranslationId } from "@/lib/config";
 import { loadProgramme, loadSurahs, loadSurahText, loadTranslation } from "@/lib/data/loaders";
 import { createPresencePoller, usePresenceStore } from "@/lib/data/presence";
 import { riwayahName } from "@/lib/format";
@@ -102,7 +102,7 @@ export default function Home() {
   }, [nextSurah]);
 
   // The translation follows the text: fetched only while it is switched on.
-  const translationId = getConfig().translationId;
+  const translationId = getTranslationId();
   const wantTranslation = translationId !== "" && translationOn;
   useEffect(() => {
     if (!wantTranslation || surahNumber === null) return;

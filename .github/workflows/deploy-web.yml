@@ -30,8 +30,10 @@ jobs:
           fi
       - run: pnpm --filter web build
         env:
-          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL || format('https://{0}', vars.API_HOST) }}
-          NEXT_PUBLIC_WS_URL: ${{ vars.NEXT_PUBLIC_WS_URL || format('wss://{0}/v1/ws', vars.API_HOST) }}
+          # Always derived from API_HOST, the host the CSP in _headers allows; an
+          # older NEXT_PUBLIC_WS_URL variable once pointed the socket elsewhere.
+          NEXT_PUBLIC_API_URL: https://${{ vars.API_HOST }}
+          NEXT_PUBLIC_WS_URL: wss://${{ vars.API_HOST }}/v1/ws
           NEXT_PUBLIC_RATE_NUDGE_MAX: ${{ vars.NEXT_PUBLIC_RATE_NUDGE_MAX || '0.02' }}
           NEXT_PUBLIC_TRANSLATION_ID: ${{ vars.NEXT_PUBLIC_TRANSLATION_ID }}
       # The hosts go through env rather than being spliced into the script,

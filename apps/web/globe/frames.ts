@@ -14,9 +14,9 @@ export const SETTLE_MS = 300;
 export const MAX_FRAME_STEP_MS = 100;
 /**
  * Auto-rotation speed in OrbitControls' `autoRotateSpeed` units: one turn every
- * 60 / speed seconds (4 minutes).
+ * 60 / speed seconds (about 2 minutes 20 seconds).
  */
-export const AUTO_ROTATE_SPEED = 0.25;
+export const AUTO_ROTATE_SPEED = 0.43;
 
 /**
  * The auto-rotation angle (radians) for `dtMs` of elapsed time. OrbitControls

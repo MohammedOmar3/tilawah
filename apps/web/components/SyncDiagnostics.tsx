@@ -7,7 +7,6 @@ import { loadProgramme, loadSurahs } from "@/lib/data/loaders";
 import { formatDuration } from "@/lib/format";
 import { useListeningStore } from "@/lib/sync";
 import { useListening } from "@/lib/use-listening";
-import JoinPanel from "./JoinPanel";
 
 const REFRESH_MS = 250;
 const MAX_EVENTS = 20;
@@ -151,18 +150,27 @@ export default function SyncDiagnostics() {
           Leave
         </button>
       ) : (
-        <JoinPanel
-          status={state.status}
-          error={state.error}
-          disabled={!programme}
-          onJoin={({ anon }) => {
-            if (!programme) return;
-            if (state.status === "error") listening.leave();
-            listening.join(programme, anon);
-            watchElements();
-            log(`join (anon: ${anon})`);
-          }}
-        />
+        <div className="flex flex-col gap-2">
+          <button
+            type="button"
+            disabled={!programme || state.status === "connecting"}
+            onClick={() => {
+              if (!programme) return;
+              if (state.status === "error") listening.leave();
+              listening.join(programme, false);
+              watchElements();
+              log("join");
+            }}
+            className="self-start rounded-full bg-gold px-6 py-2 text-sm font-semibold text-on-gold disabled:opacity-60"
+          >
+            Join
+          </button>
+          {state.error && (
+            <p role="alert" className="text-sm text-danger">
+              {state.error}
+            </p>
+          )}
+        </div>
       )}
       <table className="w-full text-sm">
         <caption className="sr-only">Live sync values</caption>

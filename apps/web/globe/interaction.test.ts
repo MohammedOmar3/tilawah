@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   AUTO_ROTATE_IDLE_MS,
-  MAX_DISTANCE,
   MAX_TILT_DEG,
-  MIN_DISTANCE,
+  MAX_ZOOM,
+  MIN_ZOOM,
   autoRotateEnabled,
-  clampDistance,
+  clampZoom,
   clampTilt,
   keyToAction,
 } from "./interaction";
@@ -57,12 +57,12 @@ describe("clampTilt", () => {
   });
 });
 
-describe("clampDistance", () => {
-  it("keeps the camera between 180 and 500 (globe radius is 100)", () => {
-    expect(MIN_DISTANCE).toBe(180);
-    expect(MAX_DISTANCE).toBe(500);
-    expect(clampDistance(100)).toBe(180);
-    expect(clampDistance(900)).toBe(500);
-    expect(clampDistance(320)).toBe(320);
+describe("clampZoom", () => {
+  it("keeps the zoom between 0.6× and 1.8× the view's globe size", () => {
+    expect(MIN_ZOOM).toBe(0.6);
+    expect(MAX_ZOOM).toBe(1.8);
+    expect(clampZoom(0.1)).toBe(0.6);
+    expect(clampZoom(4)).toBe(1.8);
+    expect(clampZoom(1.2)).toBe(1.2);
   });
 });

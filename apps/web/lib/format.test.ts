@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatCount, formatDuration, toArabicDigits } from "./format";
+import { formatCount, formatDuration, formatUntil, riwayahName, toArabicDigits } from "./format";
 
 describe("formatDuration", () => {
   it.each([
@@ -24,5 +24,27 @@ describe("toArabicDigits", () => {
 describe("formatCount", () => {
   it("groups thousands", () => {
     expect(formatCount(4821)).toBe("4,821");
+  });
+});
+
+describe("formatUntil", () => {
+  it.each([
+    [0, "in under a minute"],
+    [59_999, "in under a minute"],
+    [60_000, "in 1 min"],
+    [29 * 60_000 + 30_000, "in 29 min"],
+    [60 * 60_000, "in 1 h"],
+    [65 * 60_000, "in 1 h 5 min"],
+    [-5, "in under a minute"],
+  ])("%d ms → %s", (ms, text) => {
+    expect(formatUntil(ms)).toBe(text);
+  });
+});
+
+describe("riwayahName", () => {
+  it("names the common riwayat and capitalises others", () => {
+    expect(riwayahName("hafs")).toBe("Hafs 'an 'Asim");
+    expect(riwayahName("Warsh")).toBe("Warsh 'an Nafi'");
+    expect(riwayahName("qalun")).toBe("Qalun");
   });
 });

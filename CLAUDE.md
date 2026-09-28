@@ -26,7 +26,7 @@ Tilawah: everyone listens to the same Quran recitation at the same moment while 
 ```
 packages/contracts   shared TS types, Zod schemas, fixtures/ (Go tests read these too)
 apps/api             Go 1.24 service (chi, coder/websocket, slog)
-apps/web             Next.js static export (App Router), Tailwind, R3F + three-globe, Zustand
+apps/web             Next.js static export (App Router), Tailwind, three.js globe, Zustand
 tools/quran-data     generates apps/web/public/data/* and dev audio
 tools/loadtest       Go WebSocket load generator
 tools/media          production audio ingest (plan 08, needs credentials)
@@ -56,6 +56,6 @@ cd apps/api && go run ./cmd/server   # http://localhost:8080
 - **Time in tests is injected.** Go code takes a `clock.Clock` (`Now() time.Time`); TS sync code takes a `now: () => number`. No real sleeps in unit tests.
 - **Go:** standard library first; `internal/` packages; table-driven tests; `-race` in CI; errors wrapped with `%w`; no global state except `main`.
 - **TS:** strict mode; no `any`; Zod-validate everything fetched; components in PascalCase files; pure logic in `lib/` with unit tests (Vitest), UI tested with Playwright.
-- **Styling:** Tailwind; dark, calm palette defined as CSS variables in `app/globals.css`.
+- **Styling:** Tailwind; two calm palettes, Night (dark) and Fajr (light), defined as CSS variables in `app/globals.css`.
 - **Dependencies:** don't add a dependency a plan doesn't name. If you think one is needed, stop and report instead.
 - **Stay in your lane:** each plan lists the directories it owns. Don't edit files owned by another plan; report the need instead.

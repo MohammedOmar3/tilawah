@@ -7,7 +7,7 @@ const globe = (page: Page) => page.getByRole("img", { name: /^Globe showing list
 
 async function openLab(page: Page) {
   await page.goto("/lab/globe");
-  await expect(page.locator("canvas")).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator("canvas[data-engine]")).toBeVisible({ timeout: 20_000 });
   await expect(globe(page)).toHaveAttribute("data-globe-state", "ready", { timeout: 10_000 });
 }
 

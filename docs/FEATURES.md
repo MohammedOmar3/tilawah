@@ -38,8 +38,8 @@ Legend: **MVP** = ships in the first release · **Later** = designed for, not bu
 
 | ID | Feature | Scope | Plan | Accepted when |
 |---|---|---|---|---|
-| C1 | 3D Earth, hex-dotted land, calm dark style | MVP | 06 | Renders from Natural Earth data with no texture download |
-| C2 | Listener cells as hexbins, height/colour by count | MVP | 06 | Fixture cells render with correct relative heights |
+| C1 | 3D Earth, dotted land, calm Night and Fajr styles | MVP, restyled in phase 2 | 06 | Renders from Natural Earth data with no texture download |
+| C2 | Listener cells as crescent map pins over a soft glow, sized by count (log scale) | MVP, restyled in phase 2 | 06 | Fixture cells render with correct relative sizes |
 | C3 | Gentle pulses for batched joins, spread across the interval | MVP | 06 | Pulses fire at randomised times, never all at once |
 | C4 | Rotate and zoom (mouse, touch, keyboard) | MVP | 06 | Arrow keys rotate; +/- zoom; limits enforced |
 | C5 | Slow auto-rotation, paused on interaction | MVP | 06 | Resumes after 10 s idle |

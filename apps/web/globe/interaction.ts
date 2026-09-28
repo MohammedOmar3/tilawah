@@ -1,12 +1,11 @@
 /** Auto-rotation resumes this long after the last user interaction. */
 export const AUTO_ROTATE_IDLE_MS = 10_000;
-/** Camera distance limits; three-globe's radius is 100. */
-export const MIN_DISTANCE = 180;
-export const MAX_DISTANCE = 500;
-export const DEFAULT_DISTANCE = 320;
+/** Zoom limits, as a multiple of the globe's size in the current view. */
+export const MIN_ZOOM = 0.6;
+export const MAX_ZOOM = 1.8;
 /** Keyboard tilt limit, in degrees above or below the equator. */
 export const MAX_TILT_DEG = 60;
-/** Keyboard zoom step, as a distance multiplier. */
+/** Keyboard zoom step, as a size multiplier. */
 export const ZOOM_STEP = 1.2;
 
 export function autoRotateEnabled(input: {
@@ -51,6 +50,6 @@ export function clampTilt(degrees: number): number {
   return Math.min(MAX_TILT_DEG, Math.max(-MAX_TILT_DEG, degrees));
 }
 
-export function clampDistance(d: number): number {
-  return Math.min(MAX_DISTANCE, Math.max(MIN_DISTANCE, d));
+export function clampZoom(z: number): number {
+  return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, z));
 }

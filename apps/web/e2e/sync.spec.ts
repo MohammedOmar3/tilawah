@@ -137,7 +137,7 @@ test("clients agree on the programme clock and correct drift", async ({ browser 
   await ctxA.setOffline(false);
   outage.blocked = false;
   // Reconnect backoff can be up to 16 s at this point (full jitter), plus the join burst.
-  await expect(a.getByRole("status")).toHaveText("Listening", { timeout: 45_000 });
+  await expect(a.getByRole("status")).toHaveText("In sync", { timeout: 45_000 });
   const final = await readStore(a);
   note(`after reconnect: offset ${final.offsetMs?.toFixed(1)} ms, rtt ${final.rttMs?.toFixed(1)} ms, err ${final.errMs?.toFixed(1)} ms`);
 

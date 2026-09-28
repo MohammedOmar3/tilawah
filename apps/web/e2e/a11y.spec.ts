@@ -12,13 +12,18 @@ async function seriousViolations(page: Page) {
     .map((v) => ({ id: v.id, impact: v.impact, nodes: v.nodes.map((n) => n.target.join(" ")) }));
 }
 
-test("home has no serious accessibility violations before and after joining", async ({ page }) => {
-  await openHome(page);
-  await waitForGlobe(page);
-  expect(await seriousViolations(page)).toEqual([]);
-  await join(page, 15_000);
-  expect(await seriousViolations(page)).toEqual([]);
-});
+for (const colorScheme of ["light", "dark"] as const) {
+  test(`home has no serious accessibility violations before and after joining (${colorScheme})`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme });
+    await openHome(page);
+    await waitForGlobe(page);
+    expect(await seriousViolations(page)).toEqual([]);
+    await join(page, 15_000);
+    expect(await seriousViolations(page)).toEqual([]);
+    await page.getByRole("button", { name: "Settings" }).click();
+    expect(await seriousViolations(page)).toEqual([]);
+  });
+}
 
 test("privacy page has no serious accessibility violations", async ({ page }) => {
   await page.goto("/privacy");
@@ -42,7 +47,7 @@ test("keyboard reaches Join, the anonymous switch, the privacy link and the glob
     );
   }
   const list = [...reached];
-  expect(list).toContain("button:Join global listening");
+  expect(list).toContain("button:Join the recitation");
   expect(list.some((x) => x.startsWith("switch:"))).toBe(true);
   expect(list.some((x) => /^a:.*privacy/i.test(x))).toBe(true);
   expect(list.some((x) => x.startsWith("img:Globe showing"))).toBe(true);

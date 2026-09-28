@@ -6,19 +6,16 @@ afterEach(cleanup);
 
 describe("StatusLine", () => {
   it.each([
-    ["idle", "Live"],
+    ["idle", "Now reciting"],
     ["connecting", "Connecting…"],
     ["syncing", "Syncing…"],
-    ["playing", "Listening"],
+    ["playing", "In sync"],
     ["reconnecting", "Reconnecting… audio continues"],
     ["error", "Something went wrong"],
   ] as const)("%s → %s", (status, text) => {
-    render(<StatusLine status={status} approximate={false} />);
-    expect(screen.getByRole("status").textContent).toBe(text);
-  });
-
-  it("marks an approximate position", () => {
-    render(<StatusLine status="idle" approximate />);
-    expect(screen.getByRole("status").textContent).toBe("Live (approximate until you join)");
+    render(<StatusLine status={status} />);
+    const s = screen.getByRole("status");
+    expect(s.textContent).toBe(text);
+    expect(s.getAttribute("data-status")).toBe(status);
   });
 });

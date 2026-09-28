@@ -1,62 +1,61 @@
 "use client";
 
 import { compileProgramme, type Programme, type Surah, type SurahText } from "@tilawah/contracts";
-import { useEffect, useMemo, useState } from "react";
-import { LazyGlobe } from "@/globe";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { type GlobeFrame, LazyGlobe } from "@/globe";
 import { getConfig } from "@/lib/config";
 import { loadProgramme, loadSurahs, loadSurahText } from "@/lib/data/loaders";
 import { createPresencePoller, usePresenceStore } from "@/lib/data/presence";
+import { riwayahName } from "@/lib/format";
+import { joinFrame, listeningFrame } from "@/lib/layout";
+import { browserStorage, useSettingsStore } from "@/lib/settings";
 import { useListeningStore } from "@/lib/sync";
 import { useListening } from "@/lib/use-listening";
 import { useNowPlaying } from "@/lib/use-now-playing";
+import { useTheme } from "@/lib/use-theme";
+import AboutSheet from "./AboutSheet";
 import AyahAnnouncer from "./AyahAnnouncer";
-import AyahText from "./AyahText";
 import CountsBar from "./CountsBar";
-import Footer from "./Footer";
-import JoinPanel from "./JoinPanel";
-import ListeningControls from "./ListeningControls";
-import NowPlaying from "./NowPlaying";
-import ProgressBar from "./ProgressBar";
-import StatusLine from "./StatusLine";
+import Dock from "./Dock";
+import JoinView from "./JoinView";
+import type { NowInfo } from "./NowCard";
+import ReadingBlock from "./ReadingBlock";
+import SettingsSheet from "./SettingsSheet";
+import TopBar from "./TopBar";
 import { exposeForTests } from "./test-hooks";
 
 /** Prefetch the next surah's text this long before the boundary. */
 const PREFETCH_TEXT_MS = 30_000;
 
-function readAnnounce(): boolean {
-  try {
-    return JSON.parse(localStorage.getItem("tilawah.settings") ?? "{}").announce === true;
-  } catch {
-    return false;
-  }
-}
-
-function saveAnnounce(announce: boolean): void {
-  try {
-    localStorage.setItem("tilawah.settings", JSON.stringify({ announce }));
-  } catch {
-    /* private mode: the setting lasts for this visit only */
-  }
-}
+const sameFrame = (a: GlobeFrame | null, b: GlobeFrame) =>
+  a !== null && Math.abs(a.cx - b.cx) < 0.5 && Math.abs(a.cy - b.cy) < 0.5 && Math.abs(a.r - b.r) < 0.5;
 
 export default function Home() {
   const [programme, setProgramme] = useState<Programme | null>(null);
   const [surahs, setSurahs] = useState<Surah[] | null>(null);
   const [text, setText] = useState<SurahText | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [announce, setAnnounce] = useState(false);
+  const [sheet, setSheet] = useState<"settings" | "about" | null>(null);
 
   const presence = usePresenceStore((s) => s.presence);
   const stale = usePresenceStore((s) => s.stale);
   const status = useListeningStore((s) => s.status);
   const error = useListeningStore((s) => s.error);
-  const anon = useListeningStore((s) => s.anon);
+  const storedAnon = useListeningStore((s) => s.anon);
+  // Decision D4: visible on the globe by default, anonymous is one tap away.
+  const [anon, setAnon] = useState(storedAnon);
+
+  const { theme, dark } = useTheme();
+  const textScale = useSettingsStore((s) => s.textScale);
+  const announce = useSettingsStore((s) => s.announce);
+  const updateSettings = useSettingsStore((s) => s.update);
+  const save = (patch: Parameters<typeof updateSettings>[0]) => updateSettings(patch, browserStorage());
 
   const compiled = useMemo(() => (programme ? compileProgramme(programme) : null), [programme]);
   const np = useNowPlaying(compiled, surahs);
   const listening = useListening({ surahs, onProgrammeReloaded: setProgramme });
 
-  // Static data, presence polling and settings. Async so a bad config surfaces as a load error.
+  // Static data and presence polling. Async so a bad config surfaces as a load error.
   useEffect(() => {
     let live = true;
     let stopPoller = () => {};
@@ -68,13 +67,12 @@ export default function Home() {
       if (config.e2e) exposeForTests({ listening });
       const [p, s] = await Promise.all([loadProgramme(config.programmeUrl), loadSurahs()]);
       if (!live) return;
-      setAnnounce(readAnnounce());
       setProgramme(p);
       setSurahs(s);
     };
     boot().catch((err: unknown) => {
       console.error(err);
-      if (live) setLoadError("The programme could not be loaded");
+      if (live) setLoadError("The programme could not be loaded. Please reload the page.");
     });
     return () => {
       live = false;
@@ -84,10 +82,9 @@ export default function Home() {
 
   // Text for the current surah; the next surah's text shortly before the boundary.
   const surahNumber = np?.track.surah ?? null;
-  const nextSurah =
-    compiled && np && np.msToNextTrack < PREFETCH_TEXT_MS
-      ? compiled.programme.tracks[(np.trackIndex + 1) % compiled.programme.tracks.length]!.surah
-      : null;
+  const tracks = compiled?.programme.tracks;
+  const nextTrack = tracks && np ? tracks[(np.trackIndex + 1) % tracks.length]! : null;
+  const nextSurah = np && nextTrack && np.msToNextTrack < PREFETCH_TEXT_MS ? nextTrack.surah : null;
   useEffect(() => {
     if (surahNumber === null) return;
     let live = true;
@@ -102,71 +99,112 @@ export default function Home() {
     if (nextSurah !== null) loadSurahText(nextSurah).catch(() => undefined);
   }, [nextSurah]);
 
-  const joined = status !== "idle";
+  const inSession = status !== "idle" && status !== "error";
   const ayahs = text && text.surah === surahNumber ? text.ayahs : null;
+  const now: NowInfo | null = np
+    ? {
+        surah: np.surah,
+        ayah: np.ayah,
+        posMs: np.posInTrackMs,
+        durationMs: np.track.durationMs,
+        reciter: programme?.reciter.name ?? "",
+        riwayah: programme ? riwayahName(programme.reciter.riwayah) : "",
+        next: nextTrack ? (surahs?.find((s) => s.number === nextTrack.surah) ?? null) : null,
+        msToNext: np.msToNextTrack,
+      }
+    : null;
+
+  // Where the globe sits: beside or above the join details, or between the
+  // reading block and the dock while listening. It glides between the two.
+  const readingRef = useRef<HTMLElement>(null);
+  const dockRef = useRef<HTMLDivElement>(null);
+  const joinRef = useRef<HTMLElement>(null);
+  const [frame, setFrame] = useState<GlobeFrame | null>(null);
+  useEffect(() => {
+    const compute = () => {
+      const v = { width: window.innerWidth, height: window.innerHeight };
+      const next = inSession
+        ? listeningFrame(
+            v,
+            readingRef.current?.getBoundingClientRect().bottom ?? 58,
+            dockRef.current?.getBoundingClientRect().top ?? v.height,
+          )
+        : joinFrame(v, joinRef.current?.getBoundingClientRect().top ?? v.height);
+      setFrame((f) => (sameFrame(f, next) ? f : next));
+    };
+    compute();
+    const observer = new ResizeObserver(compute);
+    for (const el of [readingRef.current, dockRef.current, joinRef.current]) if (el) observer.observe(el);
+    window.addEventListener("resize", compute);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", compute);
+    };
+  }, [inSession]);
 
   return (
-    <div className="relative isolate flex min-h-dvh flex-col overflow-hidden">
-      <div className="absolute inset-0 -z-10 flex items-center justify-center" data-testid="globe-backdrop">
-        <div className="aspect-square h-full max-h-[110vw] w-full max-w-[110vh]">
-          {presence && <LazyGlobe presence={presence} pulseIntervalMs={getConfig().presencePollMs} />}
-        </div>
+    <div className="fixed inset-0 overflow-hidden overscroll-none bg-bg text-[15px] leading-normal text-ink">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={{ background: "var(--glow)" }} />
+      <div className="absolute inset-0" data-testid="globe-backdrop">
+        {presence && <LazyGlobe presence={presence} pulseIntervalMs={getConfig().presencePollMs} frame={frame} />}
       </div>
-      {/* A soft scrim keeps text readable over the globe without hiding it. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgba(7,11,18,0.35)_0%,rgba(7,11,18,0.8)_65%,rgba(7,11,18,0.95)_100%)]"
+
+      <TopBar
+        presence={<CountsBar listeners={presence?.listeners ?? null} countries={presence?.countries ?? null} stale={stale} />}
+        dark={dark}
+        onToggleTheme={() => save({ theme: dark ? "fajr" : "night" })}
+        onOpenSettings={() => setSheet("settings")}
       />
 
-      <main className="mx-auto flex w-full max-w-xl flex-1 flex-col items-center gap-6 px-5 pt-8 sm:pointer-events-none sm:[&_a]:pointer-events-auto sm:[&_button]:pointer-events-auto sm:[&_details]:pointer-events-auto">
-        <CountsBar
-          listeners={presence?.listeners ?? null}
-          countries={presence?.countries ?? null}
-          stale={stale}
+      {inSession ? (
+        <>
+          <ReadingBlock ref={readingRef} surah={np?.surah ?? null} ayah={np?.ayah ?? 0} ayahs={ayahs} textScale={textScale} />
+          <Dock
+            ref={dockRef}
+            status={status}
+            reciter={now?.reciter ?? ""}
+            ayah={np?.ayah ?? 0}
+            ayahCount={np?.surah?.ayahCount ?? 0}
+            posMs={np?.posInTrackMs ?? 0}
+            durationMs={np?.track.durationMs ?? 0}
+            onLeave={listening.leave}
+            onAbout={() => setSheet("about")}
+            translation={null}
+          />
+          <AyahAnnouncer enabled={announce} surahName={np?.surah?.nameTransliterated ?? ""} ayah={np?.ayah ?? 0} />
+        </>
+      ) : (
+        <JoinView
+          ref={joinRef}
+          status={status}
+          now={now}
+          anon={anon}
+          onAnonChange={setAnon}
+          disabled={!programme}
+          error={loadError ?? (error ? `${error}. Please try again.` : null)}
+          onJoin={() => {
+            if (!programme) return;
+            if (status === "error") listening.leave();
+            listening.join(programme, anon);
+          }}
         />
-        {loadError ? (
-          <p role="alert" className="text-center text-muted">
-            {loadError}. Please reload the page.
-          </p>
-        ) : (
-          <>
-            <NowPlaying surah={np?.surah ?? null} ayah={np?.ayah ?? 0} />
-            <div className="rounded-2xl bg-bg/60 px-4 py-2 backdrop-blur-[2px]">
-              <AyahText ayahs={ayahs} current={np?.ayah ?? 0} />
-            </div>
-            <div className="flex w-full max-w-sm flex-col gap-2">
-              <ProgressBar posMs={np?.posInTrackMs ?? 0} durationMs={np?.track.durationMs ?? 0} />
-              <StatusLine status={status} approximate={np?.approximate ?? true} />
-            </div>
-            <AyahAnnouncer enabled={announce && joined} surahName={np?.surah?.nameTransliterated ?? ""} ayah={np?.ayah ?? 0} />
-          </>
-        )}
-        <div className="mt-auto flex w-full flex-col items-center gap-6 pb-4">
-          {joined && status !== "error" ? (
-            <ListeningControls
-              onLeave={listening.leave}
-              announce={announce}
-              onAnnounceChange={(a) => {
-                setAnnounce(a);
-                saveAnnounce(a);
-              }}
-            />
-          ) : (
-            <JoinPanel
-              status={status}
-              error={error}
-              disabled={!programme}
-              defaultAnon={anon}
-              onJoin={({ anon: a }) => {
-                if (!programme) return;
-                if (status === "error") listening.leave();
-                listening.join(programme, a);
-              }}
-            />
-          )}
-          <Footer reciter={programme?.reciter.name} />
-        </div>
-      </main>
+      )}
+
+      <SettingsSheet
+        open={sheet === "settings"}
+        onClose={() => setSheet(null)}
+        theme={theme}
+        onTheme={(t) => save({ theme: t })}
+        textScale={textScale}
+        onTextScale={(s) => save({ textScale: s })}
+        translation={null}
+        announce={announce}
+        onAnnounce={(a) => save({ announce: a })}
+        anon={anon}
+        onAnon={setAnon}
+        listening={inSession}
+      />
+      <AboutSheet open={sheet === "about"} onClose={() => setSheet(null)} now={now} />
     </div>
   );
 }

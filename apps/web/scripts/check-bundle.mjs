@@ -1,5 +1,5 @@
 // S4 guard: the home page's own scripts must not contain the globe (three.js,
-// three-globe), which has to stay a lazy chunk, and must stay small.
+// its sky and scene), which has to stay a lazy chunk, and must stay small.
 // Runs after `next build` (postbuild).
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -8,7 +8,7 @@ import { gzipSync } from "node:zlib";
 
 const OUT = join(dirname(fileURLToPath(import.meta.url)), "..", "out");
 const LIMIT_BYTES = 250 * 1024;
-const FORBIDDEN = ["WebGLRenderer", "three-globe"];
+const FORBIDDEN = ["WebGLRenderer", "gl_PointSize"];
 
 const indexPath = join(OUT, "index.html");
 if (!existsSync(indexPath)) {

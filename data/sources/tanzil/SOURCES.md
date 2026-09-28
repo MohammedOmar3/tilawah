@@ -5,6 +5,7 @@ Downloaded by `pnpm --filter quran-data fetch-sources` and committed as-is. Neve
 | File | URL | Downloaded | sha256 |
 |---|---|---|---|
 | `quran-uthmani.txt` | https://tanzil.net/pub/download/index.php?marks=true&sajdah=true&rub=false&tatweel=true&quranType=uthmani&outType=txt-2&agree=true | 2026-09-27 | `7f30c647331a61100ebf24a80507dc0fcdd9f2df97f1312b5b2dfcb982a7f326` |
+| `en.pickthall.txt` | https://tanzil.net/trans/?transID=en.pickthall&type=txt-2 | 2026-09-28 | `4aabbfa9d96796f5a6b0217d2c39dce1a3084f772bf6f2650e37082a774e3cc7` |
 | `quran-data.xml` | https://tanzil.net/res/text/metadata/quran-data.xml | 2026-09-27 | `8867c1d88191472adec9db694b3cd9f135b1a2ef580574d32cf888dcb22c5c7a` |
 
 ## Licence
@@ -41,6 +42,8 @@ Downloaded by `pnpm --filter quran-data fetch-sources` and committed as-is. Neve
 #
 #====================================================================
 ```
+
+`en.pickthall.txt` is the English translation by Mohammed Marmaduke Pickthall (*The Meaning of the Glorious Koran*, 1930), as published by Tanzil (last updated there on 4 September 2010). Pickthall died in 1936, so the translation is in the public domain. It is shipped verbatim, with Tanzil credited as the source.
 
 `quran-data.xml` is Tanzil Quran metadata, `copyright="(C) 2008-2009 Tanzil.info" license="cc-by"` (Creative Commons Attribution).
 

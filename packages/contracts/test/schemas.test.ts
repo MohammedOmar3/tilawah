@@ -3,21 +3,25 @@ import programme from "../fixtures/programme.example.json";
 import timings from "../fixtures/timings.example.json";
 import surahs from "../fixtures/surahs.sample.json";
 import text from "../fixtures/text.sample.json";
+import translation from "../fixtures/translation.sample.json";
 import presence from "../fixtures/presence.example.json";
 import ws from "../fixtures/ws-messages.json";
-import { ClientMessage, Presence, Programme, ServerMessage, Surah, SurahText, Timings } from "../src";
+import { ClientMessage, Presence, Programme, ServerMessage, Surah, SurahText, SurahTranslation, Timings } from "../src";
 
 describe("schemas accept fixtures", () => {
   it("programme", () => expect(Programme.parse(programme)).toBeTruthy());
   it("timings", () => expect(Timings.parse(timings)).toBeTruthy());
   it("surahs", () => surahs.forEach((s) => expect(Surah.parse(s)).toBeTruthy()));
   it("text", () => expect(SurahText.parse(text)).toBeTruthy());
+  it("translation", () => expect(SurahTranslation.parse(translation)).toBeTruthy());
   it("presence", () => expect(Presence.parse(presence)).toBeTruthy());
   it("client messages", () => ws.clientValid.forEach((m) => expect(ClientMessage.parse(m)).toBeTruthy()));
   it("server messages", () => ws.serverValid.forEach((m) => expect(ServerMessage.parse(m)).toBeTruthy()));
 });
 
 describe("schemas reject bad input", () => {
+  it("a translation id without a language code", () =>
+    expect(SurahTranslation.safeParse({ ...translation, id: "pickthall" }).success).toBe(false));
   it("invalid client messages", () =>
     ws.clientInvalid.forEach((m) => expect(ClientMessage.safeParse(m).success).toBe(false)));
   it("overlapping segments", () =>

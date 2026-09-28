@@ -10,6 +10,11 @@ const SOURCES: { file: string; url: string }[] = [
     url: "https://tanzil.net/pub/download/index.php?marks=true&sajdah=true&rub=false&tatweel=true&quranType=uthmani&outType=txt-2&agree=true",
   },
   {
+    // Pickthall (1930), public domain. The translation shown under each ayah.
+    file: "tanzil/en.pickthall.txt",
+    url: "https://tanzil.net/trans/?transID=en.pickthall&type=txt-2",
+  },
+  {
     file: "tanzil/quran-data.xml",
     url: "https://tanzil.net/res/text/metadata/quran-data.xml",
   },

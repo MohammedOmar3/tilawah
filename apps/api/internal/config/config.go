@@ -21,6 +21,7 @@ type Config struct {
 	MaxConns         int
 	MaxConnsPerIP    int
 	StatsToken       string
+	StatsFile        string
 	TrustCFHeaders   bool
 	LogLevel         string
 }
@@ -47,6 +48,7 @@ func Load(lookup func(string) (string, bool)) (Config, error) {
 		OriginSecret:     get("ORIGIN_SECRET", ""),
 		ProgrammeVersion: get("PROGRAMME_VERSION", "dev"),
 		StatsToken:       get("STATS_TOKEN", ""),
+		StatsFile:        get("STATS_FILE", ""),
 		LogLevel:         get("LOG_LEVEL", "info"),
 	}
 

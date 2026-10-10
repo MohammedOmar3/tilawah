@@ -10,15 +10,17 @@ import (
 
 	"github.com/MohammedOmar3/tilawah/apps/api/internal/clock"
 	"github.com/MohammedOmar3/tilawah/apps/api/internal/geo"
+	"github.com/MohammedOmar3/tilawah/apps/api/internal/stats"
 )
 
 type presenceDoc struct {
-	V           int    `json:"v"`
-	GeneratedAt string `json:"generatedAt"`
-	Listeners   int    `json:"listeners"`
-	Countries   int    `json:"countries"`
-	Cells       []Cell `json:"cells"`
-	Joins       []Cell `json:"joins"`
+	V           int          `json:"v"`
+	GeneratedAt string       `json:"generatedAt"`
+	Listeners   int          `json:"listeners"`
+	Countries   int          `json:"countries"`
+	Cells       []Cell       `json:"cells"`
+	Joins       []Cell       `json:"joins"`
+	Totals      stats.Totals `json:"totals"`
 }
 
 func gunzip(t *testing.T, b []byte) []byte {
@@ -36,12 +38,12 @@ func gunzip(t *testing.T, b []byte) []byte {
 
 func TestLatestBeforeFirstBuildIsEmptySnapshot(t *testing.T) {
 	clk := clock.NewFake(time.Date(2026, 9, 27, 16, 0, 0, 0, time.UTC))
-	p := NewPublisher(New(5, fakeCentroids{}), clk)
+	p := NewPublisher(New(5, fakeCentroids{}), clk, stats.New(clk.Now()))
 	pl := p.Latest()
 	if pl == nil {
 		t.Fatal("Latest() is nil")
 	}
-	for _, s := range []string{`"cells":[]`, `"joins":[]`, `"listeners":0`, `"v":1`} {
+	for _, s := range []string{`"cells":[]`, `"joins":[]`, `"listeners":0`, `"v":1`, `"totals":{"since":"2026-09-27T16:00:00Z"`} {
 		if !bytes.Contains(pl.Plain, []byte(s)) {
 			t.Fatalf("plain %s missing %s", pl.Plain, s)
 		}
@@ -56,7 +58,7 @@ func TestBuildMatchesSpec(t *testing.T) {
 	r := New(5, fakeCentroids{})
 	joinPlaying(r, &geo.Cell{Country: "AE", Lat: 25.5, Lng: 55.5}, false, 5)
 	joinPlaying(r, nil, true, 1)
-	p := NewPublisher(r, clk)
+	p := NewPublisher(r, clk, stats.New(clk.Now()))
 
 	now := time.Date(2026, 9, 27, 20, 0, 0, 0, time.FixedZone("GST", 4*3600))
 	p.Build(now)
@@ -69,6 +71,7 @@ func TestBuildMatchesSpec(t *testing.T) {
 	want := presenceDoc{
 		V: 1, GeneratedAt: "2026-09-27T16:00:00Z", Listeners: 6, Countries: 1,
 		Cells: []Cell{{25.5, 55.5, 5}}, Joins: []Cell{{25.5, 55.5, 5}},
+		Totals: stats.Totals{Since: "2026-09-27T16:00:00Z", PeakListeners: 6, PeakAt: "2026-09-27T16:00:00Z", Countries: 1},
 	}
 	assertEq(t, got, want)
 	if !bytes.Equal(gunzip(t, pl.Gzip), pl.Plain) {
@@ -83,5 +86,9 @@ func TestBuildMatchesSpec(t *testing.T) {
 	}
 	if !bytes.Contains(pl2.Plain, []byte(`"joins":[]`)) {
 		t.Fatalf("joins not an empty array: %s", pl2.Plain)
+	}
+	// Six listeners for ten seconds is one listener-minute.
+	if !bytes.Contains(pl2.Plain, []byte(`"listeningMinutes":1`)) {
+		t.Fatalf("totals not advanced: %s", pl2.Plain)
 	}
 }

@@ -32,7 +32,7 @@ Legend: **MVP** = ships in the first release · **Later** = designed for, not bu
 | B3 | Presence snapshot every 10 s, served via Cloudflare cache | MVP | 03, 07 | Response carries `s-maxage=10`; handler serves pre-built bytes |
 | B4 | Counts shown in UI and refreshed every 15 s | MVP | 05 | UI updates after a fixture change |
 | B5 | Client heartbeat every 45 s; server idle timeout 120 s | MVP | 03, 04 | Silent client is dropped after 120 s in test with a fake clock |
-| B6 | "Listened today" secondary figure | Later | – | – |
+| B6 | All-time totals: listening time, peak listeners and countries (counted, saved to `STATS_FILE`); time recited, surahs and khatms (derived from the clock) | Phase 2 | – | Go: totals survive a save and load; web: join screen line and About sheet show them |
 
 ## C. Globe
 

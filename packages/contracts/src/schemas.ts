@@ -84,6 +84,15 @@ const Cell = z.object({
   n: z.number().int().positive(),
 });
 
+/** All-time listening totals, kept by the API across restarts and deploys. */
+const PresenceTotals = z.object({
+  since: z.iso.datetime(),
+  listeningMinutes: z.number().int().min(0),
+  peakListeners: z.number().int().min(0),
+  peakAt: z.iso.datetime().optional(),
+  countries: z.number().int().min(0),
+});
+
 export const Presence = z.object({
   v: z.literal(1),
   generatedAt: z.iso.datetime(),
@@ -91,6 +100,8 @@ export const Presence = z.object({
   countries: z.number().int().min(0),
   cells: z.array(Cell),
   joins: z.array(Cell),
+  /** Optional so a web build can read an API that predates it. */
+  totals: PresenceTotals.optional(),
 });
 
 export type Surah = z.infer<typeof Surah>;
@@ -104,3 +115,4 @@ export type ClientMessage = z.infer<typeof ClientMessage>;
 export type ServerMessage = z.infer<typeof ServerMessage>;
 export type Presence = z.infer<typeof Presence>;
 export type PresenceCell = z.infer<typeof Cell>;
+export type PresenceTotals = z.infer<typeof PresenceTotals>;

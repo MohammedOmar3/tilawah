@@ -92,6 +92,7 @@ Needs: the written permission from M-S5, the source recordings and verse timings
 4. Settings → Networking → Custom domain `tilawah-api.mxmd.dev`; copy the CNAME target.
 5. Settings → Usage limits → set a **hard limit of $15** so the bill can never pass $20.
 6. Health check path: `/healthz`.
+7. All-time stats: Service → **Add volume**, mount path `/data` (1 GB is plenty). Add the variables `STATS_FILE=/data/stats.json` and `RAILWAY_RUN_UID=0` (the image runs as a non-root user and Railway mounts volumes as root). With a volume attached each deploy has a few seconds of downtime; listeners reconnect on their own. Check the deploy log for `all-time totals loaded`.
 
 ### M-E5. Cloudflare in front of the API
 1. DNS: `tilawah-api` CNAME → Railway target, **Proxied** (orange cloud). WebSockets are on by default; confirm under Network.

@@ -26,5 +26,12 @@
       "lng": 55.5,
       "n": 3
     }
-  ]
+  ],
+  "totals": {
+    "since": "2026-09-27T12:00:00Z",
+    "listeningMinutes": 251460,
+    "peakListeners": 1204,
+    "peakAt": "2026-09-27T15:42:10Z",
+    "countries": 41
+  }
 }

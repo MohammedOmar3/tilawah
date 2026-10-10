@@ -45,6 +45,7 @@ func TestSnapshotCountsAndThreshold(t *testing.T) {
 	s := r.Snapshot()
 	assertEq(t, s.Listeners, 9)
 	assertEq(t, s.Countries, 2)
+	assertEq(t, s.CountryCodes, []string{"AE", "IS"})
 	assertEq(t, s.Cells, []Cell{{25.5, 55.5, 6}})
 	assertEq(t, r.Connections(), 10)
 }

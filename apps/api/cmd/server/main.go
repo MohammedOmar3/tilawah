@@ -22,6 +22,7 @@ import (
 	"github.com/MohammedOmar3/tilawah/apps/api/internal/httpapi"
 	"github.com/MohammedOmar3/tilawah/apps/api/internal/limits"
 	"github.com/MohammedOmar3/tilawah/apps/api/internal/presence"
+	"github.com/MohammedOmar3/tilawah/apps/api/internal/stats"
 	"github.com/MohammedOmar3/tilawah/apps/api/internal/telemetry"
 	"github.com/MohammedOmar3/tilawah/apps/api/internal/ws"
 )
@@ -52,7 +53,8 @@ func run() error {
 		return lat, lng, true
 	})
 	registry := presence.New(cfg.KMin, centroids)
-	publisher := presence.NewPublisher(registry, clk)
+	totals, saveTotals := loadTotals(cfg.StatsFile, clk, log)
+	publisher := presence.NewPublisher(registry, clk, totals)
 	recorder := telemetry.NewRecorder(clk)
 	limiter := limits.New(cfg.MaxConns, cfg.MaxConnsPerIP, clk)
 	hub := ws.NewHub()
@@ -86,6 +88,18 @@ func run() error {
 	pubCtx, stopPublisher := context.WithCancel(context.Background())
 	defer stopPublisher()
 	go publisher.Run(pubCtx, cfg.SnapshotInterval)
+	go func() {
+		t := time.NewTicker(statsSaveInterval)
+		defer t.Stop()
+		for {
+			select {
+			case <-pubCtx.Done():
+				return
+			case <-t.C:
+				saveTotals()
+			}
+		}
+	}()
 
 	sigCtx, stopSignals := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
 	defer stopSignals()
@@ -103,6 +117,7 @@ func run() error {
 
 	log.Info("shutting down")
 	stopPublisher()
+	saveTotals()
 	hub.CloseAll(websocket.StatusServiceRestart, "restart")
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -114,6 +129,31 @@ func run() error {
 	}
 	log.Info("stopped")
 	return nil
+}
+
+// statsSaveInterval is how often the all-time totals are written to STATS_FILE.
+const statsSaveInterval = time.Minute
+
+// loadTotals restores the all-time totals from path and returns a function
+// that saves them. With no path the totals live in memory only. A file that
+// cannot be read is left untouched for recovery: the totals then start from
+// zero in memory and are not saved.
+func loadTotals(path string, clk clock.Clock, log *slog.Logger) (*stats.Counter, func()) {
+	if path == "" {
+		log.Warn("STATS_FILE not set; all-time totals reset on restart")
+		return stats.New(clk.Now()), func() {}
+	}
+	c, err := stats.Load(path, clk.Now())
+	if err != nil {
+		log.Error("all-time totals not loaded; keeping the file and not saving", "path", path, "err", err)
+		return stats.New(clk.Now()), func() {}
+	}
+	log.Info("all-time totals loaded", "path", path, "since", c.Totals().Since)
+	return c, func() {
+		if err := c.Save(path); err != nil {
+			log.Error("all-time totals not saved", "path", path, "err", err)
+		}
+	}
 }
 
 func parseLevel(s string) slog.Level {

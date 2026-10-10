@@ -178,12 +178,15 @@ Server rules: no reply to `hb`, `state` or `stat`. Idle timeout 120 s without an
 { "v": 1, "generatedAt": "2026-09-27T16:00:00Z",
   "listeners": 4821, "countries": 82,
   "cells": [ { "lat": 25.5, "lng": 55.5, "n": 481 } ],
-  "joins": [ { "lat": 25.5, "lng": 55.5, "n": 3 } ] }
+  "joins": [ { "lat": 25.5, "lng": 55.5, "n": 3 } ],
+  "totals": { "since": "2026-10-10T12:00:00Z", "listeningMinutes": 251460,
+              "peakListeners": 1204, "peakAt": "2026-10-10T15:42:10Z", "countries": 41 } }
 ```
 - `listeners`: every connection that sent `hello` and `state{playing:true}`, anonymous included.
 - `countries`: distinct countries among visible listeners.
 - `cells`: visible listeners snapped to the grid cell centre; a cell with `n < K_MIN` is merged into its country's centroid bucket, and a country bucket with `n < K_MIN` is dropped from `cells` (still counted in `listeners`).
 - `joins`: per shown cell, the increase since the previous snapshot. Clients spread these pulses randomly across the next interval.
+- `totals`: all-time aggregates since `since` (when the stats file was first written). At every snapshot the server adds `listeners × time since the previous snapshot` (capped at 1 minute) to the listening total, raises the peak if `listeners` is higher, and adds the snapshot's countries to a set of country codes. Only the totals and that set are kept, in `STATS_FILE`, written atomically every minute and on shutdown, so they survive restarts and deploys. Clients treat `totals` as optional. Recitation totals (time recited, surahs recited, khatms) are not stored anywhere: the client derives them from `programme.json` and the clock (§3.1).
 - Response headers: `Cache-Control: public, max-age=5, s-maxage=10`, `Content-Type: application/json`, gzip when accepted, CORS for `ALLOWED_ORIGINS`.
 
 ---
@@ -250,6 +253,7 @@ At a track boundary the player swaps `src` to the next track (preloaded 30 s ahe
 | `MAX_CONNS_PER_IP` | 5 | Per-IP cap, tracked by salted hash, salt rotates daily, memory only |
 | `STATS_TOKEN` | empty | Bearer token for `/v1/stats`; empty disables the endpoint |
 | `TRUST_CF_HEADERS` | false | Read `cf-*` headers only when true (prod) |
+| `STATS_FILE` | empty | Where the all-time totals are saved (a Railway volume in prod). Empty keeps them in memory only. A file that cannot be read is left alone and the totals restart in memory without saving |
 
 - Client IP: `CF-Connecting-IP` when `TRUST_CF_HEADERS`, else the TCP peer. Used for the per-IP cap (hashed) and nothing else.
 - Location: read once at `hello` (skipped entirely when `anon: true`), snapped to the grid, raw values dropped.

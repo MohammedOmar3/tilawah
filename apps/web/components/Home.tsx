@@ -22,7 +22,7 @@ import JoinView from "./JoinView";
 import type { NowInfo } from "./NowCard";
 import ReadingBlock from "./ReadingBlock";
 import SettingsSheet from "./SettingsSheet";
-import type { TogetherInfo } from "./Together";
+import { TogetherLine, type TogetherInfo } from "./Together";
 import TopBar from "./TopBar";
 import { exposeForTests } from "./test-hooks";
 
@@ -233,6 +233,7 @@ export default function Home() {
             durationMs={np?.track.durationMs ?? 0}
             onLeave={listening.leave}
             onAbout={() => setSheet("about")}
+            footnote={together && <TogetherLine together={together} />}
             translation={translationToggle}
           />
           <AyahAnnouncer enabled={announce} surahName={np?.surah?.nameTransliterated ?? ""} ayah={np?.ayah ?? 0} />

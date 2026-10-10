@@ -2,6 +2,7 @@
 
 import type { NowInfo } from "./NowCard";
 import Sheet, { SheetGroup } from "./Sheet";
+import { TogetherList, type TogetherInfo } from "./Together";
 import { formatUntil } from "@/lib/format";
 
 export interface AboutSheetProps {
@@ -10,12 +11,13 @@ export interface AboutSheetProps {
   now: NowInfo | null;
   /** The translation's name, when one is shown. */
   translationName?: string | null;
+  together?: TogetherInfo | null;
 }
 
 const REVELATION = { meccan: "Meccan", medinan: "Medinan" } as const;
 
 /** About this recitation: the surah, the reciter, the text, and how the shared recitation works. */
-export default function AboutSheet({ open, onClose, now, translationName }: AboutSheetProps) {
+export default function AboutSheet({ open, onClose, now, translationName, together }: AboutSheetProps) {
   const surah = now?.surah;
   return (
     <Sheet
@@ -63,6 +65,11 @@ export default function AboutSheet({ open, onClose, now, translationName }: Abou
           )}
         </dl>
       </SheetGroup>
+      {together && (
+        <SheetGroup label="Together so far">
+          <TogetherList together={together} />
+        </SheetGroup>
+      )}
       <SheetGroup label="How this works">
         <p className="m-0 text-sm text-ink-2">
           Everyone hears the same ayah at the same moment. The recitation runs continuously from Al-Fatiha to An-Nas and

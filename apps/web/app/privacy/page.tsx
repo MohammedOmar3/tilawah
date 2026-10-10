@@ -73,6 +73,14 @@ export default function PrivacyPage() {
         </p>
       </Section>
 
+      <Section title="All-time totals">
+        <p className="text-muted">
+          The server keeps a few running totals for everyone together: minutes listened, the most people listening at
+          once, and how many countries listeners have come from (as a list of country codes). These are saved so they
+          survive restarts. Nothing in them says who listened, when, or from where.
+        </p>
+      </Section>
+
       <Section title="Sync quality measurements">
         <p className="text-muted">
           While you listen, your player reports three anonymous numbers about once a minute: how long a message takes to

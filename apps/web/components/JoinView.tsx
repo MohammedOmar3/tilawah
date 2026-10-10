@@ -5,6 +5,7 @@ import type { Ref } from "react";
 import type { Status } from "@/lib/sync";
 import NowCard, { type NowInfo } from "./NowCard";
 import Switch from "./Switch";
+import { TogetherLine, type TogetherInfo } from "./Together";
 
 export interface JoinViewProps {
   status: Status;
@@ -16,6 +17,8 @@ export interface JoinViewProps {
   disabled?: boolean;
   /** Shown as an alert, as a full sentence. */
   error?: string | null;
+  /** All-time figures, once the programme has loaded. */
+  together?: TogetherInfo | null;
   ref?: Ref<HTMLElement>;
 }
 
@@ -25,7 +28,7 @@ const link = "underline decoration-line-strong underline-offset-4 hover:text-ink
  * Before joining. Phones: the details sit at the bottom and the globe fills the
  * space above. Wide screens: the details sit on the right, the globe on the left.
  */
-export default function JoinView({ status, now, onJoin, anon, onAnonChange, disabled = false, error, ref }: JoinViewProps) {
+export default function JoinView({ status, now, onJoin, anon, onAnonChange, disabled = false, error, together, ref }: JoinViewProps) {
   const connecting = status === "connecting";
   return (
     <section
@@ -64,6 +67,7 @@ export default function JoinView({ status, now, onJoin, anon, onAnonChange, disa
         onChange={onAnonChange}
         className="max-w-[340px] text-[13px] text-ink-2"
       />
+      {together && <TogetherLine together={together} className="[@media(max-height:700px)]:hidden" />}
       <p className="m-0 max-w-[44ch] text-[11.5px] tracking-[0.02em] text-ink-3 min-[900px]:max-w-[40ch]">
         No accounts, no cookies, no tracking. Your location is only ever counted as a region.{" "}
         <Link href="/privacy" className={link}>

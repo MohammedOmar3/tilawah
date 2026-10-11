@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/MohammedOmar3/tilawah/apps/api/internal/clock"
+	"github.com/MohammedOmar3/tilawah/apps/api/internal/stats"
 )
 
 // Payload is a pre-built presence.json, plain and gzipped.
@@ -19,25 +20,30 @@ type Payload struct {
 }
 
 type document struct {
-	V           int    `json:"v"`
-	GeneratedAt string `json:"generatedAt"`
-	Listeners   int    `json:"listeners"`
-	Countries   int    `json:"countries"`
-	Cells       []Cell `json:"cells"`
-	Joins       []Cell `json:"joins"`
+	V           int          `json:"v"`
+	GeneratedAt string       `json:"generatedAt"`
+	Listeners   int          `json:"listeners"`
+	Countries   int          `json:"countries"`
+	Cells       []Cell       `json:"cells"`
+	Joins       []Cell       `json:"joins"`
+	Totals      stats.Totals `json:"totals"`
 }
 
 // Publisher periodically rebuilds presence.json so HTTP requests only copy bytes.
 type Publisher struct {
 	reg    *Registry
 	clk    clock.Clock
+	totals *stats.Counter
 	latest atomic.Pointer[Payload]
 }
 
-// NewPublisher returns a publisher whose Latest is a valid empty snapshot until the first Build.
-func NewPublisher(reg *Registry, clk clock.Clock) *Publisher {
-	p := &Publisher{reg: reg, clk: clk}
-	empty, err := encode(document{V: 1, GeneratedAt: formatTime(clk.Now()), Cells: []Cell{}, Joins: []Cell{}})
+// NewPublisher returns a publisher whose Latest is a valid empty snapshot until
+// the first Build. Each Build also feeds totals and publishes them.
+func NewPublisher(reg *Registry, clk clock.Clock, totals *stats.Counter) *Publisher {
+	p := &Publisher{reg: reg, clk: clk, totals: totals}
+	empty, err := encode(document{
+		V: 1, GeneratedAt: formatTime(clk.Now()), Cells: []Cell{}, Joins: []Cell{}, Totals: totals.Totals(),
+	})
 	if err != nil {
 		panic(fmt.Sprintf("presence: encode empty snapshot: %v", err)) // static data; cannot fail
 	}
@@ -51,6 +57,7 @@ func (p *Publisher) Latest() *Payload { return p.latest.Load() }
 // Build takes a registry snapshot and stores its encoded bytes.
 func (p *Publisher) Build(now time.Time) {
 	s := p.reg.Snapshot()
+	p.totals.Observe(now, s.Listeners, s.CountryCodes)
 	pl, err := encode(document{
 		V:           1,
 		GeneratedAt: formatTime(now),
@@ -58,6 +65,7 @@ func (p *Publisher) Build(now time.Time) {
 		Countries:   s.Countries,
 		Cells:       nonNil(s.Cells),
 		Joins:       nonNil(s.Joins),
+		Totals:      p.totals.Totals(),
 	})
 	if err != nil {
 		return // encoding plain structs of numbers cannot fail; keep the previous payload

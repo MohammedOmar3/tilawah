@@ -11,6 +11,7 @@ import { joinFrame, listeningFrame } from "@/lib/layout";
 import { browserStorage, useSettingsStore } from "@/lib/settings";
 import { useListeningStore } from "@/lib/sync";
 import { useListening } from "@/lib/use-listening";
+import { recitedTotals } from "@/lib/totals";
 import { useNowPlaying } from "@/lib/use-now-playing";
 import { useTheme } from "@/lib/use-theme";
 import AboutSheet from "./AboutSheet";
@@ -21,8 +22,12 @@ import JoinView from "./JoinView";
 import type { NowInfo } from "./NowCard";
 import ReadingBlock from "./ReadingBlock";
 import SettingsSheet from "./SettingsSheet";
+import { TogetherLine, type TogetherInfo } from "./Together";
 import TopBar from "./TopBar";
 import { exposeForTests } from "./test-hooks";
+
+/** How often the all-time figures are recomputed. */
+const TOTALS_TICK_MS = 60_000;
 
 /** Prefetch the next surah's text this long before the boundary. */
 const PREFETCH_TEXT_MS = 30_000;
@@ -56,6 +61,27 @@ export default function Home() {
   const compiled = useMemo(() => (programme ? compileProgramme(programme) : null), [programme]);
   const np = useNowPlaying(compiled, surahs);
   const listening = useListening({ surahs, onProgrammeReloaded: setProgramme });
+
+  // All-time figures: recited ones from the clock, listening ones from presence.json.
+  // Shown to the minute, so the wall clock is enough; the synced clock stays with the player.
+  const [totalsNow, setTotalsNow] = useState<number | null>(null);
+  useEffect(() => {
+    const tick = () => setTotalsNow(Date.now());
+    const first = setTimeout(tick, 0);
+    const id = setInterval(tick, TOTALS_TICK_MS);
+    return () => {
+      clearTimeout(first);
+      clearInterval(id);
+    };
+  }, []);
+  const together: TogetherInfo | null =
+    compiled && totalsNow !== null
+      ? {
+          recited: recitedTotals(compiled, totalsNow),
+          recitedSinceMs: compiled.epochMs,
+          listening: presence?.totals ?? null,
+        }
+      : null;
 
   // Static data and presence polling. Async so a bad config surfaces as a load error.
   useEffect(() => {
@@ -207,6 +233,7 @@ export default function Home() {
             durationMs={np?.track.durationMs ?? 0}
             onLeave={listening.leave}
             onAbout={() => setSheet("about")}
+            footnote={together && <TogetherLine together={together} />}
             translation={translationToggle}
           />
           <AyahAnnouncer enabled={announce} surahName={np?.surah?.nameTransliterated ?? ""} ayah={np?.ayah ?? 0} />
@@ -220,6 +247,7 @@ export default function Home() {
           onAnonChange={setAnon}
           disabled={!programme}
           error={loadError ?? (error ? `${error}. Please try again.` : null)}
+          together={together}
           onJoin={() => {
             if (!programme) return;
             if (status === "error") listening.leave();
@@ -247,6 +275,7 @@ export default function Home() {
         onClose={() => setSheet(null)}
         now={now}
         translationName={translationId !== "" ? (translationDoc?.name ?? null) : null}
+        together={together}
       />
     </div>
   );

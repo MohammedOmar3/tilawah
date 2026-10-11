@@ -1,6 +1,6 @@
 "use client";
 
-import type { Ref } from "react";
+import type { ReactNode, Ref } from "react";
 import { formatDuration } from "@/lib/format";
 import type { Status } from "@/lib/sync";
 import { InfoIcon, TranslateIcon } from "./icons";
@@ -19,6 +19,8 @@ export interface DockProps {
   onAbout: () => void;
   /** Null when no translation is configured: the toggle is hidden. */
   translation: { on: boolean; onChange: (on: boolean) => void } | null;
+  /** A quiet line above the panel: the all-time totals. */
+  footnote?: ReactNode;
   ref?: Ref<HTMLDivElement>;
 }
 
@@ -28,12 +30,29 @@ const chipLabel = "max-[440px]:sr-only";
 
 /** While listening: the status, where we are in the surah and the few controls there are. */
 export default function Dock(props: DockProps) {
-  const { status, reciter, ayah, ayahCount, posMs, durationMs, onLeave, onAbout, translation, ref } = props;
+  const {
+    status,
+    reciter,
+    ayah,
+    ayahCount,
+    posMs,
+    durationMs,
+    onLeave,
+    onAbout,
+    translation,
+    footnote,
+    ref,
+  } = props;
   return (
     <div
       ref={ref}
       className="fixed bottom-0 left-1/2 z-[5] w-[min(100%,760px)] -translate-x-1/2 px-4 pb-[calc(env(safe-area-inset-bottom,0px)+14px)]"
     >
+      {footnote && (
+        <div className="mb-2 flex justify-center text-center [@media(max-height:600px)]:hidden">
+          <div className="glass rounded-full px-3.5 py-1.5">{footnote}</div>
+        </div>
+      )}
       <div className="glass grid gap-2.5 rounded-[22px] px-4 pt-[13px] pb-[11px] shadow-[var(--shadow)] backdrop-blur-[22px]">
         <div className="flex items-center justify-between gap-2.5 text-[12.5px] text-ink-2 tabular-nums">
           <StatusLine status={status} className="font-semibold text-ink" />
@@ -44,8 +63,15 @@ export default function Dock(props: DockProps) {
         </div>
         <ProgressBar posMs={posMs} durationMs={durationMs} />
         <div className="flex items-center justify-between gap-2.5 text-[12.5px] text-ink-2 tabular-nums">
-          <button type="button" onClick={onLeave} className={`${chip} border-line-strong text-ink`}>
-            <span aria-hidden="true" className="size-[7px] rounded-full bg-danger" />
+          <button
+            type="button"
+            onClick={onLeave}
+            className={`${chip} border-line-strong text-ink`}
+          >
+            <span
+              aria-hidden="true"
+              className="size-[7px] rounded-full bg-danger"
+            />
             Leave
           </button>
           <div className="flex items-center gap-1.5">

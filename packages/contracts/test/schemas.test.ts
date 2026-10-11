@@ -15,6 +15,10 @@ describe("schemas accept fixtures", () => {
   it("text", () => expect(SurahText.parse(text)).toBeTruthy());
   it("translation", () => expect(SurahTranslation.parse(translation)).toBeTruthy());
   it("presence", () => expect(Presence.parse(presence)).toBeTruthy());
+  it("presence from an API without totals", () => {
+    const { totals: _, ...older } = presence;
+    expect(Presence.parse(older).totals).toBeUndefined();
+  });
   it("client messages", () => ws.clientValid.forEach((m) => expect(ClientMessage.parse(m)).toBeTruthy()));
   it("server messages", () => ws.serverValid.forEach((m) => expect(ServerMessage.parse(m)).toBeTruthy()));
 });

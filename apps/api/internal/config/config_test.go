@@ -26,6 +26,7 @@ func TestLoad(t *testing.T) {
 		MaxConns:         20000,
 		MaxConnsPerIP:    5,
 		StatsToken:       "",
+		StatsFile:        "",
 		TrustCFHeaders:   false,
 		LogLevel:         "info",
 	}
@@ -43,6 +44,7 @@ func TestLoad(t *testing.T) {
 	custom.MaxConns = 100
 	custom.MaxConnsPerIP = 2
 	custom.StatsToken = "tok"
+	custom.StatsFile = "/data/stats.json"
 	custom.TrustCFHeaders = true
 	custom.LogLevel = "debug"
 
@@ -57,7 +59,7 @@ func TestLoad(t *testing.T) {
 		{name: "all overridden", env: map[string]string{
 			"PORT": "9000", "ORIGIN_SECRET": "s3cret", "PROGRAMME_VERSION": "2026-09-27.1",
 			"SNAPSHOT_INTERVAL": "15s", "GRID_DEG": "5", "K_MIN": "3", "MAX_CONNS": "100",
-			"MAX_CONNS_PER_IP": "2", "STATS_TOKEN": "tok", "TRUST_CF_HEADERS": "true", "LOG_LEVEL": "debug",
+			"MAX_CONNS_PER_IP": "2", "STATS_TOKEN": "tok", "STATS_FILE": "/data/stats.json", "TRUST_CF_HEADERS": "true", "LOG_LEVEL": "debug",
 		}, want: custom},
 		{name: "grid deg zero", env: map[string]string{"GRID_DEG": "0"}, wantErr: "GRID_DEG"},
 		{name: "grid deg not dividing 180", env: map[string]string{"GRID_DEG": "7"}, wantErr: "GRID_DEG"},

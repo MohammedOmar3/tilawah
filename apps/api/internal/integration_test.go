@@ -20,6 +20,7 @@ import (
 	"github.com/MohammedOmar3/tilawah/apps/api/internal/httpapi"
 	"github.com/MohammedOmar3/tilawah/apps/api/internal/limits"
 	"github.com/MohammedOmar3/tilawah/apps/api/internal/presence"
+	"github.com/MohammedOmar3/tilawah/apps/api/internal/stats"
 	"github.com/MohammedOmar3/tilawah/apps/api/internal/telemetry"
 	"github.com/MohammedOmar3/tilawah/apps/api/internal/ws"
 )
@@ -51,7 +52,7 @@ func start(t *testing.T) *server {
 	clk := clock.NewFake(time.Date(2026, 9, 27, 16, 0, 0, 0, time.UTC))
 	log := slog.New(slog.NewTextHandler(io.Discard, nil))
 	reg := presence.New(cfg.KMin, presence.CentroidFunc(geo.Centroid))
-	pub := presence.NewPublisher(reg, clk)
+	pub := presence.NewPublisher(reg, clk, stats.New(clk.Now()))
 	tel := telemetry.NewRecorder(clk)
 	wsh := &ws.Handler{
 		Cfg:       cfg,

@@ -15,6 +15,7 @@ import (
 	"github.com/MohammedOmar3/tilawah/apps/api/internal/config"
 	"github.com/MohammedOmar3/tilawah/apps/api/internal/geo"
 	"github.com/MohammedOmar3/tilawah/apps/api/internal/presence"
+	listenstats "github.com/MohammedOmar3/tilawah/apps/api/internal/stats"
 	"github.com/MohammedOmar3/tilawah/apps/api/internal/telemetry"
 )
 
@@ -26,7 +27,7 @@ func newRouter(t *testing.T, env map[string]string) (http.Handler, *presence.Pub
 	}
 	clk := clock.NewFake(time.Date(2026, 9, 27, 16, 0, 0, 0, time.UTC))
 	reg := presence.New(cfg.KMin, presence.CentroidFunc(geo.Centroid))
-	pub := presence.NewPublisher(reg, clk)
+	pub := presence.NewPublisher(reg, clk, listenstats.New(clk.Now()))
 	h := NewRouter(Deps{
 		Cfg:       cfg,
 		Registry:  reg,

@@ -2,6 +2,7 @@ package presence
 
 import (
 	"cmp"
+	"maps"
 	"slices"
 )
 
@@ -16,8 +17,11 @@ type Cell struct {
 type Snapshot struct {
 	Listeners int
 	Countries int
-	Cells     []Cell
-	Joins     []Cell
+	// CountryCodes lists the countries counted in Countries, sorted. It feeds
+	// the all-time totals and is never published.
+	CountryCodes []string
+	Cells        []Cell
+	Joins        []Cell
 }
 
 // Snapshot aggregates playing listeners into k-anonymous cells and computes
@@ -72,7 +76,8 @@ func (r *Registry) Snapshot() Snapshot {
 	sortCells(cells)
 	sortCells(joins)
 
-	return Snapshot{Listeners: listeners, Countries: len(countries), Cells: cells, Joins: joins}
+	codes := slices.Sorted(maps.Keys(countries))
+	return Snapshot{Listeners: listeners, Countries: len(codes), CountryCodes: codes, Cells: cells, Joins: joins}
 }
 
 func sortCells(cs []Cell) {
